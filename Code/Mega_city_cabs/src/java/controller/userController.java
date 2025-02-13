@@ -47,7 +47,7 @@ public class userController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserByID(@PathParam("id")int id){
         try {
-            List <User> singleUser = userbl.getUserbyID(id);
+            User singleUser = userbl.getUserbyID(id);
             return Response.status(Response.Status.OK).entity(singleUser).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();

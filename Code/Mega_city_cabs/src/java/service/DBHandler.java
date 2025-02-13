@@ -28,22 +28,19 @@ public class DBHandler {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(JDBC_URL, USER, PASS);
         } catch (SQLException | ClassNotFoundException e) {
+            System.out.println("Error Log"+e.getMessage());
         }
     }
     
-    public static DBHandler getInstance(){
-        try {
-            if(instance == null){
-                synchronized (DBHandler.class) {
-                    if(instance == null){
-                        instance = DBHandler.instance;
-                    }
+    public static DBHandler getInstance() {
+        if (instance == null) {
+            synchronized (DBHandler.class) {
+                if (instance == null) {
+                    instance = new DBHandler();
                 }
             }
-            return instance;
-        } catch (Exception e) {
-            return null;
         }
+        return instance;
     }
     
     public Connection getConnection(){

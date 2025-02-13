@@ -44,20 +44,20 @@ public class UserBL {
             
             
         } catch (SQLException e) {
+            e.printStackTrace();
             return null;
         }
         
     }
     
-    public List<User> getUserbyID(int id){
-        List<User> singleUser = new ArrayList<>();
+    public User getUserbyID(int id){
+        User user = new User();
         try {
             String query = "SELECT * FROM Users WHERE uid=?";
             PreparedStatement statement = dbConnection.prepareStatement(query);
             statement.setInt(1, id);
-           ResultSet result = statement.executeQuery(query);
+           ResultSet result = statement.executeQuery();
             while (result.next()) {                
-                User user = new User();
                 user.setUid(result.getInt("uid"));
                 user.setUsername(result.getString("username"));
                 user.setRole(result.getInt("role"));
@@ -66,9 +66,8 @@ public class UserBL {
                 user.setEmail(result.getString("email"));
                 user.setTelephone(result.getString("telephone"));
                 user.setAddress(result.getString("address"));
-                singleUser.add(user);
             }
-            return singleUser;
+            return user;
             
         } catch (SQLException e) {
             return null;
