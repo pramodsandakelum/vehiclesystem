@@ -25,7 +25,7 @@ public class UserBL {
     public List<User> getallUser(){
         List<User> userlist = new ArrayList<>();
         try {
-            String query = "";
+            String query = "SELECT * FROM Users";
             Statement statement = dbConnection.createStatement();
             ResultSet result = statement.executeQuery(query);
             while (result.next()) {                
@@ -52,7 +52,7 @@ public class UserBL {
     public List<User> getUserbyID(int id){
         List<User> singleUser = new ArrayList<>();
         try {
-            String query = "";
+            String query = "SELECT * FROM Users WHERE uid=?";
             PreparedStatement statement = dbConnection.prepareStatement(query);
             statement.setInt(1, id);
            ResultSet result = statement.executeQuery(query);
@@ -78,7 +78,7 @@ public class UserBL {
     public String createUser(User user){
         String Message = "Error Creating Account";
         try {
-            String query = "";
+            String query = "INSERT INTO Users (username, password, role, fname, lname, email, telephone, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
             PreparedStatement statement = dbConnection.prepareStatement(query);
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
@@ -101,7 +101,7 @@ public class UserBL {
     public String updateUser(User user){
         String Message = "Error Updating Account";
         try {
-            String query = "";
+            String query = "UPDATE Users SET username=?, password = ?, role = ?, fname = ?, lname = ?, email = ?, telephone = ?, address = ? WHERE uid = ?;";
             PreparedStatement statement = dbConnection.prepareStatement(query);
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
@@ -125,7 +125,7 @@ public class UserBL {
     public String deleteUser(int id){
         String Message = "Error Deleting Account";
         try {
-            String query = "";
+            String query = "DELETE FROM Users WHERE uid = ?;";
             PreparedStatement statement = dbConnection.prepareStatement(query);
             statement.setInt(1, id);
             int result = statement.executeUpdate();

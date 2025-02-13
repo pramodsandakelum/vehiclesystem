@@ -12,6 +12,8 @@ package controller;
 
 import java.util.List;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -29,6 +31,7 @@ public class userController {
     private final UserBL userbl = new UserBL();
     
     @Path("/getAllUsers")
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers(){
         try {
@@ -40,6 +43,7 @@ public class userController {
     }
     
     @Path("getUserByID/{id}")
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserByID(@PathParam("id")int id){
         try {
@@ -49,6 +53,43 @@ public class userController {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     
+    }
+    
+    @Path("/createAccount")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createAccount(User user){
+        try {
+            String Result = userbl.createUser(user);
+            return  Response.status(Response.Status.OK).entity(Result).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+    
+    
+    @Path("/updateAccount")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateAccount(User user){
+        try {
+            String Result = userbl.updateUser(user);
+            return Response.status(Response.Status.OK).entity(Result).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+    
+    @Path("deleteAccount/{id}")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteAccount(@PathParam("id")int id){
+        try {
+            String Result = userbl.deleteUser(id);
+            return Response.status(Response.Status.OK).entity(Result).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
     }
     
     
