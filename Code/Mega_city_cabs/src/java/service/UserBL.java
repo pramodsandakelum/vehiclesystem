@@ -23,24 +23,24 @@ public class UserBL {
     public Connection dbConnection = dbManager.getConnection();
     
     public List<User> getallUser(){
-        List<User> userlist = new ArrayList<>();
+        List<User> user =new ArrayList<>();
         try {
             String query = "SELECT * FROM Users";
             Statement statement = dbConnection.createStatement();
             ResultSet result = statement.executeQuery(query);
-            while (result.next()) {                
-                User user = new User();
-                user.setUid(result.getInt("uid"));
-                user.setUsername(result.getString("username"));
-                user.setRole(result.getInt("role"));
-                user.setFname(result.getString("fname"));
-                user.setLname(result.getString("lname"));
-                user.setEmail(result.getString("email"));
-                user.setTelephone(result.getString("telephone"));
-                user.setAddress(result.getString("address"));
-                userlist.add(user);
+            while (result.next()) { 
+                User userlist = new User();
+                userlist.setUid(result.getInt("uid"));
+                userlist.setUsername(result.getString("username"));
+                userlist.setRole(result.getInt("role"));
+                userlist.setFname(result.getString("fname"));
+                userlist.setLname(result.getString("lname"));
+                userlist.setEmail(result.getString("email"));
+                userlist.setTelephone(result.getString("telephone"));
+                userlist.setAddress(result.getString("address"));
+                user.add(userlist);
             }
-            return userlist;
+            return user;
             
             
         } catch (SQLException e) {
