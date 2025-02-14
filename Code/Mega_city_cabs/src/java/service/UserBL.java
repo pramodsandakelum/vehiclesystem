@@ -50,6 +50,25 @@ public class UserBL {
         
     }
     
+    public String returnUserName(int id){
+        String fname ="";
+        String lname="";
+        String fullname = "";
+        try {
+            String query = "SELECT fname, lname from Users WHERE uid=?";
+            PreparedStatement statement = dbConnection.prepareStatement(query);
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {                
+                fname = result.getString("fname");
+                lname = result.getString("lname");
+            }
+            return fullname = fname+" "+lname;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
     public User getUserbyID(int id){
         User user = new User();
         try {

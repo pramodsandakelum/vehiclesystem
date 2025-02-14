@@ -13,8 +13,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import model.Destination;
-import model.User;
-import model.bookinginfoDTO;
+import model.billCalculateDTO;
+import model.bookingDetailDTO;
 import service.BookingBL;
 
 /**
@@ -45,11 +45,24 @@ public class bookingController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllDestination(@PathParam("pickupid")int pickup,@PathParam("dropid")int drop){
         try {
-            bookinginfoDTO bookingdto = bookingbl.calculateBooking(pickup, drop);
+            billCalculateDTO bookingdto = bookingbl.calculateBooking(pickup, drop);
             return Response.status(Response.Status.OK).entity(bookingdto).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     }
+    
+    @Path("/getallBooking")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllBooking(){
+        try {           
+            List<bookingDetailDTO> bookingList = bookingbl.getAllBookings();
+            return Response.status(Response.Status.OK).entity(bookingList).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+    
     
 }

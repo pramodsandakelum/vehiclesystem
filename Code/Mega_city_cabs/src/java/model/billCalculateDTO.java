@@ -8,7 +8,7 @@ package model;
  *
  * @author pramo
  */
-public class bookinginfoDTO {
+public class billCalculateDTO {
 
     private Double km;
     private Double serviceCharge;

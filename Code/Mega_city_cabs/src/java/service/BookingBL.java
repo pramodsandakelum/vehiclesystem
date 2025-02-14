@@ -11,9 +11,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import javax.naming.spi.DirStateFactory;
 import model.Destination;
-import model.bookinginfoDTO;
+import model.billCalculateDTO;
+import model.bookingDetailDTO;
+
 
 /**
  *
@@ -47,7 +48,7 @@ public class BookingBL {
 
     }
 
-    public bookinginfoDTO calculateBooking(int pickup, int drop) {
+    public billCalculateDTO calculateBooking(int pickup, int drop) {
         final double earthRadius = 6378;
         double fixedCharge = 500;
         double chargePerKM = 120;
@@ -59,7 +60,7 @@ public class BookingBL {
         double latitude2 = 0;
         double longitude2 = 0;
         int locationCount = 0;
-        bookinginfoDTO bookinginfo = new bookinginfoDTO();
+        billCalculateDTO bookinginfo = new billCalculateDTO();
         try {
             String query = "SELECT city_latitude, city_longitude FROM Destination WHERE cid=? or cid=?";
             PreparedStatement statement = dbConnection.prepareStatement(query);
@@ -106,6 +107,44 @@ public class BookingBL {
         } catch (SQLException e) {
             return null;
         }
+    }
+    
+    public List<bookingDetailDTO> getAllBookings(){
+        try {
+            List<bookingDetailDTO> bookingList = new ArrayList<>();
+            
+            String Query = "SELECT * FROM Booking";
+            Statement statement = dbConnection.createStatement();
+            ResultSet result = statement.executeQuery(Query);
+            while(result.next()){
+                bookingDetailDTO booking = new bookingDetailDTO();
+                UserBL user = new UserBL();
+                VehicleBL vehicle = new VehicleBL();
+                DestinationBL destination = new DestinationBL();
+                
+                booking.setBid(result.getInt("bid"));
+                booking.setBcode(result.getString("bcode"));
+                booking.setCustomerName(user.returnUserName(result.getInt("cid")));
+                booking.setDriverName(user.returnUserName(result.getInt("did")));
+                booking.setVehicleNumber(vehicle.returnVehicleNo(result.getInt("vid")));
+                booking.setVehicleType(vehicle.returnVehicleType(result.getInt("vid")));
+                booking.setPickupLocation(destination.returnPickup(result.getInt("pickupid")));
+                booking.setDropLocation(destination.returnDrop(result.getInt("dropid")));
+                booking.setDistance(result.getDouble("distance"));
+                booking.setFare(result.getDouble("fare"));
+                booking.setServiceCharge(result.getDouble("serviceCharge"));
+                booking.setFixedCharge(result.getDouble("fixedCharge"));
+                booking.setChargePerKM(result.getDouble("chargePerKM")); 
+                booking.setApproved(result.getBoolean("Approved"));
+                bookingList.add(booking);      
+            }
+            
+            return bookingList;
+            
+        } catch (SQLException e) {
+            return null;
+        }
+    
     }
 
 }
