@@ -91,48 +91,42 @@ public class UserBL {
     }
 
     public String createUser(User user) {
-        String message = "Error Creating Account";
+    String message = "Error Creating Account";
 
-        String query = "INSERT INTO Users (username, password, role, fname, lname, email, telephone, address) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?); SELECT SCOPE_IDENTITY();";
+    String query = "INSERT INTO Users (username, password, role, fname, lname, email, telephone, address) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?); SELECT SCOPE_IDENTITY();";
 
-        try (PreparedStatement statement = dbConnection.prepareStatement(query)) {
-            statement.setString(1, user.getUsername());
-            statement.setString(2, user.getPassword());
-            statement.setInt(3, user.getRole()); // Roles: admin=1, driver=2, customer=3
-            statement.setString(4, user.getFname());
-            statement.setString(5, user.getLname());
-            statement.setString(6, user.getEmail());
-            statement.setString(7, user.getTelephone());
-            statement.setString(8, user.getAddress());
+    try (PreparedStatement statement = dbConnection.prepareStatement(query)) {
+        statement.setString(1, user.getUsername());
+        statement.setString(2, user.getPassword());
+        statement.setInt(3, user.getRole()); // Roles: admin=1, driver=2, customer=3
+        statement.setString(4, user.getFname());
+        statement.setString(5, user.getLname());
+        statement.setString(6, user.getEmail());
+        statement.setString(7, user.getTelephone());
+        statement.setString(8, user.getAddress());
+        ResultSet rs = statement.executeQuery();
 
-            // Execute INSERT + SCOPE_IDENTITY()
-            boolean result = statement.execute(); // Executes the statement
-
-            if (result) {
-                try (ResultSet rs = statement.getResultSet()) {
-                    if (rs.next()) {
-                        int lastID = rs.getInt(1); // Get the last inserted ID
-
-                        // If role is Driver (role = 2), create driver profile
-                        if (user.getRole() == 2) {
-                            Driver driver = new Driver();
-                            driver.setId(lastID);
-                            driver.setName(user.getFname() + " " + user.getLname());
-                            driver.setIs_available(true);
-                            createDriverProfile(driver);
-                        }
-
-                        return "Account Created Successfully";
-                    }
-                }
+        if (rs.next()) {
+            int lastID = rs.getInt(1); // Get the last inserted ID
+            // If role is Driver (role = 2), create driver profile
+            if (user.getRole() == 2) {
+                Driver driver = new Driver();
+                driver.setId(lastID);
+                driver.setName(user.getFname() + " " + user.getLname());
+                driver.setIs_available(true);
+                createDriverProfile(driver);
             }
-        } catch (SQLException e) {
-            return "Internal Server Error: " + e.getMessage();
-        }
 
-        return message;
+            return "Account Created Successfully";
+        }
+    } catch (SQLException e) {
+        return "Internal Server Error: " + e.getMessage();
     }
+
+    return message;
+}
+
 
     public String updateUser(User user) {
         String Message = "Error Updating Account";
