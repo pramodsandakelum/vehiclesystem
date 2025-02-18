@@ -44,7 +44,7 @@ public class UserBL {
             return user;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            
             return null;
         }
 
@@ -158,11 +158,11 @@ public class UserBL {
                     driver.setIs_available(true);
                     updateDriverProfile(driver);
                 }
-                return Message = "Account Updated Successfully";
+                Message = "Account Updated Successfully";
             }
             return Message;
         } catch (SQLException e) {
-            return Message = "Internal Server Error" + e.getMessage();
+            return "Internal Server Error" + e.getMessage();
         }
     }
 
@@ -181,11 +181,11 @@ public class UserBL {
             int result = statement.executeUpdate();
             if (result > 0) {
 
-                return Message = "Account Deleted Successfully";
+                Message = "Account Deleted Successfully";
             }
             return Message;
         } catch (SQLException e) {
-            return Message = "Internal Server Error" + e.getMessage();
+            return "Internal Server Error" + e.getMessage();
         }
     }
 
