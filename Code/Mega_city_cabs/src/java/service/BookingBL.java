@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import model.Booking;
 import model.Destination;
+import model.Driver;
 import model.billCalculateDTO;
 import model.bookingDetailDTO;
 
@@ -27,6 +28,8 @@ public class BookingBL {
 
     public DBHandler dbManager = DBHandler.getInstance();
     public Connection dbConnection = dbManager.getConnection();
+    
+    private final UserBL userbl = new UserBL();
 
     public billCalculateDTO calculateBooking(int pickup, int drop) {
         final double earthRadius = 6378;
@@ -156,21 +159,16 @@ public class BookingBL {
             
             int result = statement.executeUpdate();
             if(result>0){
-                try {
-                    String Query = "INSERT INTO DRIVER (id,)";
-                    PreparedStatement statement2 = dbConnection.prepareStatement(Query);
-                    statement2.setInt(1, booking.getDid());
-                    statement2.setString(2, userbl.returnUserName(booking.getDid()));
-                    statement2.setBoolean(3, true);
-                    statement2.executeUpdate();
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
+                //update driver profile setting driver unavailable
+                Driver driver = new Driver();
+                driver.setId(booking.getDid());
+                driver.setName(userbl.returnUserName(booking.getDid()));
+                driver.setIs_available(false);
+                userbl.updateDriverProfile(driver);
                 message = "Booking Created Successfully";
             }
-            dbConnection.close();
             return message;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             return "Internal server Error" + e.getMessage();
         }
     }

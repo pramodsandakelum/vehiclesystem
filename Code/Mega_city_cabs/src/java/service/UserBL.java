@@ -93,8 +93,7 @@ public class UserBL {
     public String createUser(User user) {
     String message = "Error Creating Account";
 
-    String query = "INSERT INTO Users (username, password, role, fname, lname, email, telephone, address) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?); SELECT SCOPE_IDENTITY();";
+    String query = "INSERT INTO Users (username, password, role, fname, lname, email, telephone, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?); SELECT SCOPE_IDENTITY();";
 
     try (PreparedStatement statement = dbConnection.prepareStatement(query)) {
         statement.setString(1, user.getUsername());
