@@ -8,6 +8,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import model.Destination;
 
 /**
  *
@@ -48,5 +52,28 @@ public class DestinationBL {
         } catch (SQLException e) {
             return null;
         }
+    }
+    
+    public List<Destination> getAllDestination() {
+
+        List<Destination> locations = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM Destination";
+            Statement statement = dbConnection.createStatement();
+            ResultSet result = statement.executeQuery(query);
+
+            while (result.next()) {
+                Destination location = new Destination();
+                location.setCid(result.getInt("cid"));
+                location.setCity_name(result.getString("city_name"));
+                location.setCity_latitude(result.getDouble("city_latitude"));
+                location.setCity_longitude(result.getDouble("city_longitude"));
+                locations.add(location);
+            }
+            return locations;
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 }

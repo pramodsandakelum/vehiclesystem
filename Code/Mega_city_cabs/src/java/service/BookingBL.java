@@ -5,16 +5,19 @@
 package service;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import model.Booking;
 import model.Destination;
 import model.billCalculateDTO;
 import model.bookingDetailDTO;
-
 
 /**
  *
@@ -24,29 +27,6 @@ public class BookingBL {
 
     public DBHandler dbManager = DBHandler.getInstance();
     public Connection dbConnection = dbManager.getConnection();
-
-    public List<Destination> getAllDestination() {
-
-        List<Destination> locations = new ArrayList<>();
-        try {
-            String query = "SELECT * FROM Destination";
-            Statement statement = dbConnection.createStatement();
-            ResultSet result = statement.executeQuery(query);
-
-            while (result.next()) {
-                Destination location = new Destination();
-                location.setCid(result.getInt("cid"));
-                location.setCity_name(result.getString("city_name"));
-                location.setCity_latitude(result.getDouble("city_latitude"));
-                location.setCity_longitude(result.getDouble("city_longitude"));
-                locations.add(location);
-            }
-            return locations;
-        } catch (Exception e) {
-            return null;
-        }
-
-    }
 
     public billCalculateDTO calculateBooking(int pickup, int drop) {
         final double earthRadius = 6378;
@@ -84,44 +64,44 @@ public class BookingBL {
             //Haversine Formula to calculate distance using latitudes and longitudes
             latDistance = Math.toRadians(latitude2 - latitude1);
             lonDistance = Math.toRadians(longitude2 - longitude1);
-            
-            double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
-                Math.cos(Math.toRadians(latitude1)) * Math.cos(Math.toRadians(latitude2)) *
-                Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-            
+
+            double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                    + Math.cos(Math.toRadians(latitude1)) * Math.cos(Math.toRadians(latitude2))
+                    * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+
             double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            
+
             // end formula
-            
-            Double totalDistance = earthRadius*c;
+            Double totalDistance = earthRadius * c;
             Double taxifare = fixedCharge + (chargePerKM * totalDistance);
-            Double serviceCharge = (taxifare/100) * taxrate;
-            
+            Double serviceCharge = (taxifare / 100) * taxrate;
+
             bookinginfo.setFixedCharge(fixedCharge);
-            bookinginfo.setKm(Math.round(totalDistance*100.0)/100.0);
-            bookinginfo.setServiceCharge(Math.round(serviceCharge*100.0)/100.0);
-            bookinginfo.setTaxiFare(Math.round(taxifare*100.0)/100.0);
-            
+            bookinginfo.setKm(Math.round(totalDistance * 100.0) / 100.0);
+            bookinginfo.setServiceCharge(Math.round(serviceCharge * 100.0) / 100.0);
+            bookinginfo.setTaxiFare(Math.round(taxifare * 100.0) / 100.0);
+            bookinginfo.setChargePerKM(chargePerKM);
+
             return bookinginfo;
 
         } catch (SQLException e) {
             return null;
         }
     }
-    
-    public List<bookingDetailDTO> getAllBookings(){
+
+    public List<bookingDetailDTO> getAllBookings() {
         try {
             List<bookingDetailDTO> bookingList = new ArrayList<>();
-            
+
             String Query = "SELECT * FROM Booking";
             Statement statement = dbConnection.createStatement();
             ResultSet result = statement.executeQuery(Query);
-            while(result.next()){
+            while (result.next()) {
                 bookingDetailDTO booking = new bookingDetailDTO();
                 UserBL user = new UserBL();
                 VehicleBL vehicle = new VehicleBL();
                 DestinationBL destination = new DestinationBL();
-                
+
                 booking.setBid(result.getInt("bid"));
                 booking.setBcode(result.getString("bcode"));
                 booking.setCustomerName(user.returnUserName(result.getInt("cid")));
@@ -134,17 +114,65 @@ public class BookingBL {
                 booking.setFare(result.getDouble("fare"));
                 booking.setServiceCharge(result.getDouble("serviceCharge"));
                 booking.setFixedCharge(result.getDouble("fixedCharge"));
-                booking.setChargePerKM(result.getDouble("chargePerKM")); 
+                booking.setChargePerKM(result.getDouble("chargePerKM"));
                 booking.setApproved(result.getBoolean("Approved"));
-                bookingList.add(booking);      
+                bookingList.add(booking);
             }
-            
+
             return bookingList;
-            
+
         } catch (SQLException e) {
             return null;
         }
-    
+
+    }
+
+    public String addBooking(Booking booking) {
+        String message = "Error Adding Booking";
+        billCalculateDTO charges = new billCalculateDTO();
+        UserBL userbl = new UserBL();
+        try {
+            String query = "INSERT INTO Booking (bcode, cid, did, bdate, vid, pickupid, dropid, distance, fare, serviceCharge, fixedCharge, chargePerKM, Approved) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+            String bookingCode = "MCB-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+            PreparedStatement statement = dbConnection.prepareStatement(query);
+            //from backend
+            statement.setString(1, bookingCode);
+            //from frontend
+            statement.setInt(2, booking.getCid());//customer id from front
+            statement.setInt(3, booking.getDid());//driver id from front
+            statement.setDate(4, booking.getBdate());//get date from front
+            statement.setInt(5, booking.getVid());//vehicle id from front
+            statement.setInt(6, booking.getPickupid());//pickup location from front
+            statement.setInt(7, booking.getDropid());//drop location from front
+            //hack prevention extra security
+            //calculate distance and fare in backend using pickup and drop location
+            charges = calculateBooking(booking.getPickupid(), booking.getDropid());
+            statement.setDouble(8, charges.getKm());//trip distance
+            statement.setDouble(9, charges.getTaxiFare());// total fare
+            statement.setDouble(10, charges.getServiceCharge());
+            statement.setDouble(11, charges.getFixedCharge());
+            statement.setDouble(12, charges.getChargePerKM());
+            statement.setBoolean(13, false);
+            
+            int result = statement.executeUpdate();
+            if(result>0){
+                try {
+                    String Query = "INSERT INTO DRIVER (id,)";
+                    PreparedStatement statement2 = dbConnection.prepareStatement(Query);
+                    statement2.setInt(1, booking.getDid());
+                    statement2.setString(2, userbl.returnUserName(booking.getDid()));
+                    statement2.setBoolean(3, true);
+                    statement2.executeUpdate();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+                message = "Booking Created Successfully";
+            }
+            dbConnection.close();
+            return message;
+        } catch (Exception e) {
+            return "Internal server Error" + e.getMessage();
+        }
     }
 
 }

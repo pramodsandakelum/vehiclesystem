@@ -7,15 +7,18 @@ package controller;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import model.Booking;
 import model.Destination;
 import model.billCalculateDTO;
 import model.bookingDetailDTO;
 import service.BookingBL;
+import service.DestinationBL;
 
 /**
  *
@@ -27,13 +30,14 @@ import service.BookingBL;
 public class bookingController {
     
     private final BookingBL bookingbl = new BookingBL();
+    private final DestinationBL destinationbl = new DestinationBL();
     
     @Path("/getAllDestination")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllDestination(){
         try {
-            List<Destination> locations = bookingbl.getAllDestination();
+            List<Destination> locations = destinationbl.getAllDestination();
             return Response.status(Response.Status.OK).entity(locations).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
@@ -43,10 +47,10 @@ public class bookingController {
     @Path("calculateFare/{pickupid}/{dropid}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllDestination(@PathParam("pickupid")int pickup,@PathParam("dropid")int drop){
+    public Response calculateFare(@PathParam("pickupid")int pickup,@PathParam("dropid")int drop){
         try {
-            billCalculateDTO bookingdto = bookingbl.calculateBooking(pickup, drop);
-            return Response.status(Response.Status.OK).entity(bookingdto).build();
+            billCalculateDTO faredto = bookingbl.calculateBooking(pickup, drop);
+            return Response.status(Response.Status.OK).entity(faredto).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
@@ -59,6 +63,18 @@ public class bookingController {
         try {           
             List<bookingDetailDTO> bookingList = bookingbl.getAllBookings();
             return Response.status(Response.Status.OK).entity(bookingList).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+    
+    @Path("/addBooking")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addBooking(Booking booking){
+        try {
+            String result = bookingbl.addBooking(booking);
+            return Response.status(Response.Status.OK).entity(result).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }

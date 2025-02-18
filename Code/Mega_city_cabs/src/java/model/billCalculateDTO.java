@@ -47,6 +47,14 @@ public class billCalculateDTO {
     public void setTaxiFare(Double taxiFare) {
         this.taxiFare = taxiFare;
     }
+
+    public Double getChargePerKM() {
+        return chargePerKM;
+    }
+
+    public void setChargePerKM(Double chargePerKM) {
+        this.chargePerKM = chargePerKM;
+    }
     
     
     
