@@ -71,7 +71,7 @@
                     <div id="errorMessage" class="text-danger mt-2 text-center" style="display: none;">Invalid credentials. Please try again.</div>
                 </form>
                 <div class="footer mt-4">
-                    <p>Don't have an account? <a href="#">Sign Up</a></p>
+                    <p>Don't have an account? <a href="signup.jsp">Sign Up</a></p>
                 </div>
             </div>
         </div>

@@ -6,8 +6,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Dashboard</title>
     <script src="commonFunctions.js"></script>
+    <style>
+        #dashboardContent{
+            display: none;
+        }
+    </style>
 </head>
-<body>
+<body id="dashboardcontent">
     <h1>Welcome, <span id="username"></span></h1>
     <h1>Role, <span id="role"></span></h1>
     <h1>ID, <span id="uid"></span></h1>
@@ -19,7 +24,8 @@
         var role = '<%= session.getAttribute("role") != null ? session.getAttribute("role") : "" %>';
 
         window.onload = function () {
-            loginCheck(uid, username,role);
+            checkSession();
+            
         };
     </script>
 </body>
