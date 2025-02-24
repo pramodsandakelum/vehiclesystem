@@ -11,15 +11,20 @@ package controller;
 
 
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import model.User;
+import model.userCredentialDTO;
 import service.UserBL;
 
 
@@ -29,6 +34,53 @@ import service.UserBL;
 public class userController {
     
     private final UserBL userbl = new UserBL();
+    
+    @Path("/login")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response login(userCredentialDTO userCred, @Context HttpServletRequest request) {
+    try {
+        userCredentialDTO user = userbl.userLogin(userCred.getUsername(), userCred.getPassword());
+        if (user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\": \"Invalid Login\"}").build();
+        } else {
+            HttpSession session = request.getSession(true);
+            session.setAttribute("uid", user.getUid());
+            session.setAttribute("username", user.getUsername());
+            session.setAttribute("role", user.getRole());
+            return Response.ok().cookie(new NewCookie("JSESSIONID", session.getId(), "/", null, null, 3600, false)).entity("{\"success\": true}").build();
+        }
+    } catch (Exception e) {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+    }
+    }
+
+    @GET
+    @Path("/sessionCheck")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response checkSession(@Context HttpServletRequest request) {
+    HttpSession session = request.getSession(false);
+    if (session != null && session.getAttribute("uid") != null) {
+        return Response.ok("{\"authenticated\": true}").build();
+    } else {
+        return Response.status(Response.Status.UNAUTHORIZED)
+                       .entity("{\"authenticated\": false}")
+                       .build();
+    }
+    }
+    
+    @Path("logout")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response logout(@Context HttpServletRequest request) {
+    HttpSession session = request.getSession(false);
+    if (session != null) {
+        session.invalidate();
+    }
+    return Response.ok("{\"success\": true, \"message\": \"Logged out successfully\"}").build();
+    }
+    
     
     @Path("/getAllUsers")
     @GET

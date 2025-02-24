@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Driver;
 import model.User;
+import model.userCredentialDTO;
 
 /**
  *
@@ -48,6 +49,26 @@ public class UserBL {
             return null;
         }
 
+    }
+    
+    public userCredentialDTO userLogin(String username,String password){
+        userCredentialDTO udt = new userCredentialDTO();
+        try {
+            String query = "SELECT * from Users WHERE username=? AND password=?";
+            PreparedStatement statement = dbConnection.prepareStatement(query);
+            statement.setString(1, username);
+            statement.setString(2, password);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next()){
+                udt.setUsername(rs.getString("username"));
+                udt.setRole(rs.getInt("role"));
+                udt.setUid(rs.getInt("uid"));
+                return udt;
+            }
+            return null;
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     public String returnUserName(int id) {
