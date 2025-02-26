@@ -34,6 +34,7 @@ public class UserBL {
                 User userlist = new User();
                 userlist.setUid(result.getInt("uid"));
                 userlist.setUsername(result.getString("username"));
+                userlist.setPassword(result.getString("password"));
                 userlist.setRole(result.getInt("role"));
                 userlist.setFname(result.getString("fname"));
                 userlist.setLname(result.getString("lname"));

@@ -83,7 +83,7 @@
             <p id="role-text">Loading...</p>
         </div>
 
-        <a href="#" onclick="loadPage('dashboardContent.jsp')">Dashboard</a>
+        
 
         <% Integer role = (Integer) session.getAttribute("role"); %>
 
@@ -108,7 +108,7 @@
 
     <!-- Main Content Area -->
     <div class="content">
-        <iframe id="contentFrame" src="dashboardContent.jsp"></iframe>
+        <iframe id="contentFrame" src=""></iframe>
     </div>
 
     <!-- Bootstrap JS -->
