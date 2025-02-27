@@ -136,6 +136,7 @@ public class UserBL {
                 driver.setId(lastID);
                 driver.setName(user.getFname() + " " + user.getLname());
                 driver.setIs_available(true);
+                System.out.println("driver create");
                 createDriverProfile(driver);
             }
 
@@ -171,7 +172,14 @@ public class UserBL {
                     driver.setId(user.getUid());
                     driver.setName(user.getFname() + " " + user.getLname());
                     driver.setIs_available(true);
+                    // search if a driver exists before update else create a new one by passing same data
+                    
+                    System.out.println("driver update");
                     updateDriverProfile(driver);
+                    
+                }else{    
+                    System.out.println("driver delete");
+                        deleteDriverProfile(user.getUid());              
                 }
                 Message = "Account Updated Successfully";
             }
@@ -236,6 +244,18 @@ public class UserBL {
 
         }
 
+    }
+    
+    public int searchDriverProfile(int driverId) {
+        String query = "SELECT * FROM Driver WHERE id = ?;";
+        try (PreparedStatement statement = dbConnection.prepareStatement(query)) {
+            statement.setInt(1, driverId);
+           int result = statement.executeUpdate();
+           return result;
+        } catch (SQLException e) {
+            
+        }
+        return 0;
     }
 
 }

@@ -114,8 +114,6 @@ function createAccount() {
             });
 }
 
-
-//for admin manageusers
 function loadUsers() {
     alert('test');
     fetch("http://localhost:8080/Mega_city_cabs/api/user/getAllUsers") // Update with your actual API endpoint
@@ -133,7 +131,7 @@ function loadUsers() {
                             <tr>
                                 <td>${user.uid}</td>
                                 <td>${user.username}</td>
-                                <td>${user.password}</td>
+                                <td style='display:none;'>${user.password}</td>
                                 <td>${user.fname}</td>
                                 <td>${user.lname}</td>
                                 <td>${user.email}</td>
@@ -141,11 +139,21 @@ function loadUsers() {
                                 <td>${user.address}</td>
                                 <td>${getRoleText(user.role)}</td>
                                 <td>
-                                <button class="btn btn-sm btn-warning me-2" onclick="updateUser(${user.id}, '${user.username}', '${user.email}', ${user.role})">
-                                <i class="fas fa-edit"></i> <!-- FontAwesome Edit Icon -->
+                                <button class="btn btn-primary btn-sm" onclick='openUserModal({
+                                                uid: ${user.uid},
+                                                username: "${user.username}",
+                                                password: "${user.password}",
+                                                fname: "${user.fname}",
+                                                lname: "${user.lname}",
+                                                email: "${user.email}",
+                                                telephone: "${user.telephone}",
+                                                address: "${user.address}",
+                                                role: ${user.role}
+                                            })'>
+                                <i class="fas fa-edit"></i> Edit
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">
-                                <i class="fas fa-trash-alt"></i> <!-- FontAwesome Delete Icon -->
+                                <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.uid})">
+                                <i class="fas fa-trash"></i> Delete
                                 </button>
                                 </td>
                             </tr>
@@ -170,6 +178,106 @@ function getRoleText(role) {
         default:
             return "Unknown Role"; // Handle unexpected values
     }
+}
+
+let isEdit = false;
+
+function openUserModal(user = null) {
+    let isEdit = user !== null;
+    document.getElementById("userModalLabel").textContent = isEdit ? "Edit User" : "Add User";
+
+    document.getElementById("userId").value = isEdit ? user.uid : "";
+    document.getElementById("username").value = isEdit ? user.username : "";
+    document.getElementById("password").value = isEdit ? user.password : "";
+    document.getElementById("firstName").value = isEdit ? user.fname : "";
+    document.getElementById("lastName").value = isEdit ? user.lname : "";
+    document.getElementById("email").value = isEdit ? user.email : "";
+    document.getElementById("telephone").value = isEdit ? user.telephone : "";
+    document.getElementById("address").value = isEdit ? user.address : "";
+    document.getElementById("role").value = isEdit ? user.role : "3";
+
+    let modal = new bootstrap.Modal(document.getElementById("userModal"));
+    modal.show();
+}
+
+
+
+function saveUser() {
+    let isEdit = document.getElementById("userId").value !== ""; // Determine if editing or creating new user
+
+    
+    let user = {
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+        fname: document.getElementById("firstName").value,
+        lname: document.getElementById("lastName").value,
+        email: document.getElementById("email").value,
+        telephone: document.getElementById("telephone").value,
+        address: document.getElementById("address").value,
+        role: parseInt(document.getElementById("role").value)
+    };
+    
+    
+
+    if (isEdit) {
+        user.uid = parseInt(document.getElementById("userId").value);
+    }
+
+    let url = isEdit
+        ? "http://localhost:8080/Mega_city_cabs/api/user/updateAccount"
+        : "http://localhost:8080/Mega_city_cabs/api/user/createAccount";
+    
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === "Account Created Successfully") {
+            alert("✅ Account created successfully!");
+                    loadUsers();
+                    let modal = new bootstrap.Modal(document.getElementById("userModal"));
+                    modal.hide();
+            //window.location.href = "index.jsp"; // Uncomment if redirect is needed
+        } else if(data.message === "Account Updated Successfully") {
+            alert("✅ Account updated successfully!");
+                    loadUsers();
+                    let modal = new bootstrap.Modal(document.getElementById("userModal"));
+                    modal.hide();
+        }else{
+            alert("❌ Error: " + (data.error || "Unknown error"));
+        }
+    })
+    .catch(error => {
+        console.error("Error creating account:", error);
+        alert("❌ Network error. Please try again.");
+    });
+}
+
+
+
+// Function to delete a user
+function deleteUser(id) {
+    if (confirm("Are you sure you want to delete this user?")) {
+        fetch(`http://localhost:8080/Mega_city_cabs/api/user/deleteAccount/${id}`)
+        .then(response => response.json())
+    .then(data => {
+        if (data.message === "Account Deleted Successfully") {
+            alert("✅ Account Deleted successfully!");
+                    loadUsers();
+            
+        } else {
+            alert("❌ Error: " + (data.error || "Unknown error"));
+        }
+    })
+    .catch(error => {
+        console.error("Error creating account:", error);
+        alert("❌ Network error. Please try again.");
+    });
+}
 }
 
 

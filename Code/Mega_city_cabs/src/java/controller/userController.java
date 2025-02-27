@@ -143,6 +143,7 @@ public class userController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateAccount(User user) {
         try {
+            System.out.println("update call");
             String Result = userbl.updateUser(user);
             
             JSONObject jsonResponse = new JSONObject();
@@ -158,7 +159,7 @@ public class userController {
     }
 
     @Path("deleteAccount/{id}")
-    @POST
+    @GET
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteAccount(@PathParam("id") int id) {
         try {
