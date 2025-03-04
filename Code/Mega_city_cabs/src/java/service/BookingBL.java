@@ -135,8 +135,8 @@ public class BookingBL {
         billCalculateDTO charges = new billCalculateDTO();
         UserBL userbl = new UserBL();
         try {
-            String query = "INSERT INTO Booking (bcode, cid, did, bdate, vid, pickupid, dropid, distance, fare, serviceCharge, fixedCharge, chargePerKM, Approved) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-            String bookingCode = "MCB-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+            String query = "INSERT INTO Booking (bcode, cid, did, bdate, vid, pickupid, dropid, distance, fare, serviceCharge, fixedCharge, chargePerKM, Approved) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
+            String bookingCode = generateBookingCode();
             PreparedStatement statement = dbConnection.prepareStatement(query);
             //from backend
             statement.setString(1, bookingCode);
@@ -172,5 +172,12 @@ public class BookingBL {
             return "Internal server Error" + e.getMessage();
         }
     }
+    
+    
+    public String generateBookingCode() {
+    long timestamp = System.currentTimeMillis(); // Current time in milliseconds
+    String uniqueID = UUID.randomUUID().toString().substring(0, 4).toUpperCase(); // Short random string
+    return "MCB-" + timestamp + "-" + uniqueID;
+}
 
 }

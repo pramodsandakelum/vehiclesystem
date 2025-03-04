@@ -115,7 +115,7 @@ function createAccount() {
 }
 
 function loadUsers() {
-    alert('test');
+    
     fetch("http://localhost:8080/Mega_city_cabs/api/user/getAllUsers") // Update with your actual API endpoint
             .then(response => {
                 if (!response.ok) {
@@ -240,13 +240,13 @@ function saveUser() {
             alert("✅ Account created successfully!");
                     loadUsers();
                     let modal = new bootstrap.Modal(document.getElementById("userModal"));
-                    modal.hide();
+                    
             //window.location.href = "index.jsp"; // Uncomment if redirect is needed
         } else if(data.message === "Account Updated Successfully") {
             alert("✅ Account updated successfully!");
                     loadUsers();
                     let modal = new bootstrap.Modal(document.getElementById("userModal"));
-                    modal.hide();
+                    
         }else{
             alert("❌ Error: " + (data.error || "Unknown error"));
         }

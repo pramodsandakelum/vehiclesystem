@@ -97,7 +97,7 @@
         <% } %>
 
         <% if (role != null && (role == 1 || role == 3)) { %> <!-- Admin & Customer -->
-            <a href="#" onclick="loadPage('bookRide.jsp')">Book a Ride</a>
+            <a href="#" onclick="loadPage('bookride.jsp')">Book a Ride</a>
             <a href="#" onclick="loadPage('rideHistory.jsp')">Ride History</a>
         <% } %>
 

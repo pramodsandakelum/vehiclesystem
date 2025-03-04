@@ -173,9 +173,16 @@ public class UserBL {
                     driver.setName(user.getFname() + " " + user.getLname());
                     driver.setIs_available(true);
                     // search if a driver exists before update else create a new one by passing same data
-                    
-                    System.out.println("driver update");
+                    int exists = searchDriverProfile(user.getUid());
+                    if(exists >0){
+                        System.out.println("driver update");
                     updateDriverProfile(driver);
+                    }else{
+                        System.out.println("driver create");
+                        createDriverProfile(driver);
+                    }
+                    
+                    
                     
                 }else{    
                     System.out.println("driver delete");
