@@ -23,6 +23,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import model.Driver;
 import model.User;
 import model.userCredentialDTO;
 import org.json.JSONException;
@@ -174,6 +175,18 @@ public class userController {
             JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("message", "Server Error");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse.toString()).build();
+        }
+    }
+    
+    @Path("/getAllDrivers")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllDrivers() {
+        try {
+            List<Driver> driverlist = userbl.getallDriver();
+            return Response.status(Response.Status.OK).entity(driverlist).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     }
 

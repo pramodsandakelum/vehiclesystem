@@ -1,4 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page session="true" %>
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,12 +11,21 @@
     <script src="bookride.js"></script>
 </head>
 <body>
+    <script>
+    window.onload = function (){
+        var uid = '<%= session.getAttribute("uid")%>';
+        let cid = document.getElementById("cid");
+        cid.textContent = uid;
+        
+        getUserName(uid);
+    }
+    </script>
 <div class="container mt-5">
     <h2>Book a Ride</h2>
     <form id="bookingForm">
         <div class="mb-3">
-            <label for="cid" class="form-label">Customer ID:</label>
-            <input type="number" class="form-control" id="cid" name="cid" required>
+            <label for="cid" class="form-label">Customer ID:</label>&nbsp;<b><label id="cid" class="form-label"></label></b><br>
+            <label for="cid" class="form-label">Customer Name:</label>&nbsp;<b><label id="name" class="form-label"></label></b><br>
         </div>
         
         <div class="mb-3">
@@ -34,12 +44,12 @@
         
         <div class="mb-3">
             <label for="distance" class="form-label">Total Distance</label>
-            <input type="number" class="form-control" id="cid" name="cid" disabled>
+            <input type="text" class="form-control" id="distance" name="distance" disabled>
         </div>
         
         <div class="mb-3">
-            <label for="price" class="form-label">Price</label>
-            <input type="number" class="form-control" id="cid" name="cid" disabled>
+            <label for="price" class="form-label">Price (LKR)</label>
+            <input type="number" class="form-control" id="price" name="price" disabled>
         </div>
         
         <div class="mb-3">
@@ -72,19 +82,7 @@
     
 
     // Load drivers and vehicles (Dummy data, replace with API call if needed)
-    function loadDriversAndVehicles() {
-        // Example drivers
-        let driverSelect = document.getElementById("did");
-        ["1", "2", "3"].forEach(id => {
-            driverSelect.appendChild(new Option("Driver " + id, id));
-        });
-
-        // Example vehicles
-        let vehicleSelect = document.getElementById("vid");
-        ["101", "102", "103"].forEach(id => {
-            vehicleSelect.appendChild(new Option("Vehicle " + id, id));
-        });
-    }
+    
 
     document.addEventListener("DOMContentLoaded", function () {
         loadDestinations();

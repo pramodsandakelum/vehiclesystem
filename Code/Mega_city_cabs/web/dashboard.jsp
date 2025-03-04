@@ -89,7 +89,7 @@
 
         <% if (role != null && role == 1) { %> <!-- Admin -->
             <a href="#" onclick="loadPage('manageUsers.jsp')">Manage Users</a>
-            <a href="#" onclick="loadPage('reports.jsp')">View Reports</a>
+            <a href="#" onclick="loadPage('manageVehicle.jsp')">View Reports</a>
         <% } %>
 
         <% if (role != null && (role == 1 || role == 2)) { %> <!-- Admin & Driver -->

@@ -264,5 +264,27 @@ public class UserBL {
         }
         return 0;
     }
+    
+    public List<Driver> getallDriver() {
+        List<Driver> driver = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM Driver WHERE is_available=1";
+            Statement statement = dbConnection.createStatement();
+            ResultSet result = statement.executeQuery(query);
+            while (result.next()) {
+                Driver driverlist = new Driver();
+                driverlist.setId(result.getInt("id"));
+                driverlist.setName(result.getString("name"));
+                driverlist.setIs_available(result.getBoolean("is_available"));
+                driver.add(driverlist);
+            }
+            return driver;
+
+        } catch (SQLException e) {
+            
+            return null;
+        }
+
+    }
 
 }

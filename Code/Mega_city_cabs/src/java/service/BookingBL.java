@@ -155,7 +155,7 @@ public class BookingBL {
             statement.setDouble(10, charges.getServiceCharge());
             statement.setDouble(11, charges.getFixedCharge());
             statement.setDouble(12, charges.getChargePerKM());
-            statement.setBoolean(13, false);
+            statement.setBoolean(13, true);
             
             int result = statement.executeUpdate();
             if(result>0){
