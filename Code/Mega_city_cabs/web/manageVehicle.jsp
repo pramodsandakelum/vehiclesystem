@@ -17,19 +17,13 @@
         <input type="hidden" id="vid"> <!-- Hidden for Update -->
         
         <label class="form-label">Vehicle Type:</label>
-        <select id="booked" class="form-control">
-            <option value="1">Car</option>
-            <option value="2">Van</option>
+        <select id="type" class="form-control">
+            <option value="Car">Car</option>
+            <option value="Van">Van</option>
         </select>
 
         <label class="form-label">Vehicle Number:</label>
         <input type="text" id="number" class="form-control" required>
-
-        <label class="form-label">Booked:</label>
-        <select id="booked" class="form-control">
-            <option value="false">No</option>
-            <option value="true">Yes</option>
-        </select>
 
         <button type="submit" class="btn btn-primary mt-3">Save Vehicle</button>
     </form>
@@ -51,78 +45,42 @@
     </table>
 </div>
 
-<script>
-    // 🌟 Fetch and display all vehicles
-    async function loadVehicles() {
-        let response = await fetch("api/vehicle/getAll");
-        let vehicles = await response.json();
+<!-- 🔹 Edit Modal -->
+<div class="modal fade" id="editVehicleModal" tabindex="-1" aria-labelledby="editVehicleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editVehicleModalLabel">Edit Vehicle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editVehicleForm">
+                    <input type="hidden" id="editVid">
+                    
+                    <label class="form-label">Vehicle Type:</label>
+                    <select id="editType" class="form-control">
+                        <option value="Car">Car</option>
+                        <option value="Van">Van</option>
+                    </select>
 
-        let tableBody = document.getElementById("vehicleTableBody");
-        tableBody.innerHTML = ""; // Clear previous rows
+                    <label class="form-label">Vehicle Number:</label>
+                    <input type="text" id="editNumber" class="form-control" required>
 
-        vehicles.forEach(v => {
-            let row = `<tr>
-                <td>${v.vid}</td>
-                <td>${v.type}</td>
-                <td>${v.number}</td>
-                <td>${v.booked ? "Yes" : "No"}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm" onclick="editVehicle(${v.vid}, '${v.type}', '${v.number}', ${v.booked})">Edit</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteVehicle(${v.vid})">Delete</button>
-                </td>
-            </tr>`;
-            tableBody.innerHTML += row;
-        });
-    }
+                    <label class="form-label">Booked:</label>
+                    <select id="editBooked" class="form-control">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
 
-    // 🚗 Handle Form Submission (Add/Update)
-    document.getElementById("vehicleForm").onsubmit = async function(event) {
-        event.preventDefault();
+                    <button type="submit" class="btn btn-success mt-3">Update Vehicle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-        let vid = document.getElementById("vid").value;
-        let type = document.getElementById("type").value;
-        let number = document.getElementById("number").value;
-        let booked = document.getElementById("booked").value === "true";
-
-        let vehicleData = { type, number, booked };
-
-        let url = vid ? `api/vehicle/update/${vid}` : "api/vehicle/add";
-        let method = vid ? "PUT" : "POST";
-
-        let response = await fetch(url, {
-            method: method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(vehicleData)
-        });
-
-        let result = await response.text();
-        alert(result);
-        document.getElementById("vehicleForm").reset();
-        document.getElementById("vid").value = ""; // Reset hidden field
-        loadVehicles();
-    };
-
-    // ✏️ Edit Vehicle
-    function editVehicle(id, type, number, booked) {
-        document.getElementById("vid").value = id;
-        document.getElementById("type").value = type;
-        document.getElementById("number").value = number;
-        document.getElementById("booked").value = booked;
-    }
-
-    // ❌ Delete Vehicle
-    async function deleteVehicle(id) {
-        if (confirm("Are you sure you want to delete this vehicle?")) {
-            let response = await fetch(`api/vehicle/delete/${id}`, { method: "DELETE" });
-            let result = await response.text();
-            alert(result);
-            loadVehicles();
-        }
-    }
-
-    // 🚀 Load Vehicles on Page Load
-    loadVehicles();
-</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="vehicle.js"></script>
 
 </body>
 </html>

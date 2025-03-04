@@ -1,19 +1,58 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package service;
 
-import model.Vehicle;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import model.Vehicle;
 
+/**
+ *
+ * @author pramo
+ */
 public class VehicleBL {
-
+    
     public DBHandler dbManager = DBHandler.getInstance();
     public Connection dbConnection = dbManager.getConnection();
-
-    // 🚗 Get Vehicle by ID
+    
+    public String returnVehicleNo(int id){
+        String number = "";
+        try {
+            String query = "SELECT number from Vehicle WHERE vid=?";
+            PreparedStatement statement = dbConnection.prepareStatement(query);
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {                
+                number = result.getString("number");
+            }
+            return number;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    public String returnVehicleType(int id){
+        String Type = "";
+        try {
+            String query = "SELECT type from Vehicle WHERE vid=?";
+            PreparedStatement statement = dbConnection.prepareStatement(query);
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {                
+                Type = result.getString("type");
+            }
+            return Type;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
     public List<Vehicle> getVehicles() {
         List<Vehicle> vehicleList = new ArrayList<>();
         try {
@@ -30,19 +69,19 @@ public class VehicleBL {
                 vehicleList.add(vehicle);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            return null;
         }
         return vehicleList;
     }
 
-    // 🚗 Insert New Vehicle
+    
     public boolean insertVehicle(Vehicle vehicle) {
         try {
             String query = "INSERT INTO Vehicle (type, number, booked) VALUES (?, ?, ?)";
             PreparedStatement statement = dbConnection.prepareStatement(query);
             statement.setString(1, vehicle.getType());
             statement.setString(2, vehicle.getNumber());
-            statement.setBoolean(3, vehicle.getBooked());
+            statement.setBoolean(3, true);
 
             int rowsInserted = statement.executeUpdate();
             return rowsInserted > 0;
@@ -84,4 +123,5 @@ public class VehicleBL {
             return false;
         }
     }
+    
 }
