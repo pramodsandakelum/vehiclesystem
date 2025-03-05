@@ -32,7 +32,7 @@ public class VehicleBL {
                 number = result.getString("number");
             }
             return number;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             return null;
         }
     }
@@ -48,7 +48,7 @@ public class VehicleBL {
                 Type = result.getString("type");
             }
             return Type;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             return null;
         }
     }
@@ -60,7 +60,7 @@ public class VehicleBL {
             PreparedStatement statement = dbConnection.prepareStatement(query);
             ResultSet result = statement.executeQuery();
 
-            if (result.next()) {
+            while (result.next()) {
                 Vehicle vehicle = new Vehicle();
                 vehicle.setVid(result.getInt("vid"));
                 vehicle.setType(result.getString("type"));
@@ -81,14 +81,15 @@ public class VehicleBL {
             PreparedStatement statement = dbConnection.prepareStatement(query);
             statement.setString(1, vehicle.getType());
             statement.setString(2, vehicle.getNumber());
-            statement.setBoolean(3, true);
+            statement.setBoolean(3, false);
 
             int rowsInserted = statement.executeUpdate();
             return rowsInserted > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            //e.printStackTrace();
             return false;
         }
+        
     }
 
 
@@ -98,12 +99,12 @@ public class VehicleBL {
             PreparedStatement statement = dbConnection.prepareStatement(query);
             statement.setString(1, vehicle.getType());
             statement.setString(2, vehicle.getNumber());
-            statement.setBoolean(3, vehicle.getBooked());
+            statement.setBoolean(3, false);
             statement.setInt(4, vehicle.getVid());
 
             int rowsUpdated = statement.executeUpdate();
             return rowsUpdated > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
@@ -118,7 +119,7 @@ public class VehicleBL {
 
             int rowsDeleted = statement.executeUpdate();
             return rowsDeleted > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }

@@ -36,7 +36,6 @@
                     <th>Last Name</th>
                     <th>Email</th>
                     <th>Telephone</th>
-                    <th>Address</th>
                     <th>Role</th>
                     <th>Actions</th>
                 </tr>

@@ -136,7 +136,7 @@ function loadUsers() {
                                 <td>${user.lname}</td>
                                 <td>${user.email}</td>
                                 <td>${user.telephone}</td>
-                                <td>${user.address}</td>
+                                <td style='display:none;'>${user.address}</td>
                                 <td>${getRoleText(user.role)}</td>
                                 <td>
                                 <button class="btn btn-primary btn-sm" onclick='openUserModal({

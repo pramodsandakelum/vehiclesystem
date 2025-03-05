@@ -11,8 +11,7 @@
 
 <div class="container mt-4">
     <h2>Manage Vehicles</h2>
-
-    <!-- 🚗 Vehicle Form -->
+    
     <form id="vehicleForm">
         <input type="hidden" id="vid"> <!-- Hidden for Update -->
         
@@ -25,12 +24,11 @@
         <label class="form-label">Vehicle Number:</label>
         <input type="text" id="number" class="form-control" required>
 
-        <button type="submit" class="btn btn-primary mt-3">Save Vehicle</button>
-    </form>
+        <button onclick="saveVehicle()"class="btn btn-primary mt-3">Save Vehicle</button>
+    </form><br>
 
-    <!-- 🚗 Vehicle Table -->
-    <table class="table mt-4">
-        <thead>
+    <table class="table table-striped">
+        <thead class="table-dark">
             <tr>
                 <th>ID</th>
                 <th>Type</th>
@@ -40,12 +38,10 @@
             </tr>
         </thead>
         <tbody id="vehicleTableBody">
-            <!-- Dynamic Data -->
         </tbody>
     </table>
 </div>
 
-<!-- 🔹 Edit Modal -->
 <div class="modal fade" id="editVehicleModal" tabindex="-1" aria-labelledby="editVehicleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -66,13 +62,8 @@
                     <label class="form-label">Vehicle Number:</label>
                     <input type="text" id="editNumber" class="form-control" required>
 
-                    <label class="form-label">Booked:</label>
-                    <select id="editBooked" class="form-control">
-                        <option value="0">No</option>
-                        <option value="1">Yes</option>
-                    </select>
 
-                    <button type="submit" class="btn btn-success mt-3">Update Vehicle</button>
+                    <button onclick="updateVehicle()" class="btn btn-success mt-3">Update Vehicle</button>
                 </form>
             </div>
         </div>

@@ -1,6 +1,6 @@
 // 🌟 Fetch and display all vehicles
 async function loadVehicles() {
-    let response = await fetch("api/vehicle/getAll");
+    let response = await fetch("http://localhost:8080/Mega_city_cabs/api/vehicle/getAllVehicle");
     let vehicles = await response.json();
 
     let tableBody = document.getElementById("vehicleTableBody");
@@ -13,7 +13,7 @@ async function loadVehicles() {
             <td>${v.number}</td>
             <td>${v.booked ? "Yes" : "No"}</td>
             <td>
-                <button class="btn btn-warning btn-sm" onclick="openEditModal(${v.vid}, '${v.type}', '${v.number}', ${v.booked})">Edit</button>
+                <button class="btn btn-warning btn-sm" onclick="openEditModal(${v.vid}, '${v.type}', '${v.number}')">Edit</button>
                 <button class="btn btn-danger btn-sm" onclick="deleteVehicle(${v.vid})">Delete</button>
             </td>
         </tr>`;
@@ -21,70 +21,64 @@ async function loadVehicles() {
     });
 }
 
-// 🚗 Handle Form Submission (Add New Vehicle)
-document.getElementById("vehicleForm").onsubmit = async function(event) {
-    event.preventDefault();
-
+async function saveVehicle(){
     let type = document.getElementById("type").value;
     let number = document.getElementById("number").value;
 
     let vehicleData = { type, number, booked: false };
 
-    let response = await fetch("api/vehicle/add", {
+    let response = await fetch("http://localhost:8080/Mega_city_cabs/api/vehicle/addVehicle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(vehicleData)
     });
 
-    let result = await response.text();
-    alert(result);
+    let result = await response.json();
+    alert(result.message);
     document.getElementById("vehicleForm").reset();
     loadVehicles();
-};
 
-// ✏️ Open Edit Modal with Data
-function openEditModal(id, type, number, booked) {
+}
+
+function openEditModal(id, type, number) {
     document.getElementById("editVid").value = id;
     document.getElementById("editType").value = type;
     document.getElementById("editNumber").value = number;
-    document.getElementById("editBooked").value = booked;
 
     var editModal = new bootstrap.Modal(document.getElementById('editVehicleModal'));
     editModal.show();
 }
 
-// ✅ Handle Update Vehicle
-document.getElementById("editVehicleForm").onsubmit = async function(event) {
-    event.preventDefault();
-
+async function updateVehicle(){
     let vid = document.getElementById("editVid").value;
     let type = document.getElementById("editType").value;
     let number = document.getElementById("editNumber").value;
-    let booked = document.getElementById("editBooked").value;
 
-    let vehicleData = { type, number, booked };
+    let vehicleData = { vid, type, number};
 
-    let response = await fetch(`api/vehicle/update/${vid}`, {
-        method: "PUT",
+    let response = await fetch(`http://localhost:8080/Mega_city_cabs/api/vehicle/updateVehicle`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(vehicleData)
     });
+    
+    let result = await response.json();
 
-    let result = await response.text();
-    alert(result);
+    
+    alert(result.message);
 
     var editModal = bootstrap.Modal.getInstance(document.getElementById('editVehicleModal'));
     editModal.hide();
 
     loadVehicles();
-};
+}
 
 // ❌ Delete Vehicle
 async function deleteVehicle(id) {
     if (confirm("Are you sure you want to delete this vehicle?")) {
-        let response = await fetch(`api/vehicle/delete/${id}`, { method: "DELETE" });
-        let result = await response.text();
-        alert(result);
+        let response = await fetch(`http://localhost:8080/Mega_city_cabs/api/vehicle/deleteVehicle/${id}`);
+        let result = await response.json();
+        alert(result.message);
         loadVehicles();
     }
 }
