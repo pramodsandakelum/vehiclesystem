@@ -17,18 +17,18 @@ import model.Vehicle;
  * @author pramo
  */
 public class VehicleBL {
-    
+
     public DBHandler dbManager = DBHandler.getInstance();
     public Connection dbConnection = dbManager.getConnection();
-    
-    public String returnVehicleNo(int id){
+
+    public String returnVehicleNo(int id) {
         String number = "";
         try {
             String query = "SELECT number from Vehicle WHERE vid=?";
             PreparedStatement statement = dbConnection.prepareStatement(query);
             statement.setInt(1, id);
             ResultSet result = statement.executeQuery();
-            while (result.next()) {                
+            while (result.next()) {
                 number = result.getString("number");
             }
             return number;
@@ -36,15 +36,15 @@ public class VehicleBL {
             return null;
         }
     }
-    
-    public String returnVehicleType(int id){
+
+    public String returnVehicleType(int id) {
         String Type = "";
         try {
             String query = "SELECT type from Vehicle WHERE vid=?";
             PreparedStatement statement = dbConnection.prepareStatement(query);
             statement.setInt(1, id);
             ResultSet result = statement.executeQuery();
-            while (result.next()) {                
+            while (result.next()) {
                 Type = result.getString("type");
             }
             return Type;
@@ -52,7 +52,7 @@ public class VehicleBL {
             return null;
         }
     }
-    
+
     public List<Vehicle> getVehicles() {
         List<Vehicle> vehicleList = new ArrayList<>();
         try {
@@ -74,7 +74,29 @@ public class VehicleBL {
         return vehicleList;
     }
 
-    
+    public List<Vehicle> getVehiclesbyType(String type) {
+        List<Vehicle> vehicleList = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM Vehicle WHERE type=? AND booked=?";
+            PreparedStatement statement = dbConnection.prepareStatement(query);
+            statement.setString(1, type);
+            statement.setBoolean(2, false);
+            ResultSet result = statement.executeQuery();
+
+            while (result.next()) {
+                Vehicle vehicle = new Vehicle();
+                vehicle.setVid(result.getInt("vid"));
+                vehicle.setType(result.getString("type"));
+                vehicle.setNumber(result.getString("number"));
+                vehicle.setBooked(result.getBoolean("booked"));
+                vehicleList.add(vehicle);
+            }
+        } catch (SQLException e) {
+            return null;
+        }
+        return vehicleList;
+    }
+
     public boolean insertVehicle(Vehicle vehicle) {
         try {
             String query = "INSERT INTO Vehicle (type, number, booked) VALUES (?, ?, ?)";
@@ -89,9 +111,8 @@ public class VehicleBL {
             //e.printStackTrace();
             return false;
         }
-        
-    }
 
+    }
 
     public boolean updateVehicle(Vehicle vehicle) {
         try {
@@ -99,7 +120,11 @@ public class VehicleBL {
             PreparedStatement statement = dbConnection.prepareStatement(query);
             statement.setString(1, vehicle.getType());
             statement.setString(2, vehicle.getNumber());
-            statement.setBoolean(3, false);
+            if (vehicle.getBooked() == false) {
+                statement.setBoolean(3, false);
+            } else {
+                statement.setBoolean(3, vehicle.getBooked());
+            }
             statement.setInt(4, vehicle.getVid());
 
             int rowsUpdated = statement.executeUpdate();
@@ -109,7 +134,6 @@ public class VehicleBL {
             return false;
         }
     }
-
 
     public boolean deleteVehicle(int vid) {
         try {
@@ -124,5 +148,19 @@ public class VehicleBL {
             return false;
         }
     }
-    
+
+    public boolean unbookVehicle(int vid) {
+        try {
+            String query = "UPDATE Vehicle SET booked = false WHERE vid = ?";
+            PreparedStatement statement = dbConnection.prepareStatement(query);
+            statement.setInt(1, vid);
+
+            int rowsUpdated = statement.executeUpdate();
+            return rowsUpdated > 0; // Return true if at least one row is updated
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

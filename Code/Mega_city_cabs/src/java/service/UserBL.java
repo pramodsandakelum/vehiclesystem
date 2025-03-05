@@ -36,6 +36,12 @@ public class UserBL {
                 userlist.setUsername(result.getString("username"));
                 userlist.setPassword(result.getString("password"));
                 userlist.setRole(result.getInt("role"));
+                if(result.getInt("role") == 2){
+                Driver driver = returnDriverProfile(result.getInt("uid"));
+                if(driver.isIs_available() == false){
+                    userlist.setBooked(true);
+                }                
+                }
                 userlist.setFname(result.getString("fname"));
                 userlist.setLname(result.getString("lname"));
                 userlist.setEmail(result.getString("email"));
@@ -253,6 +259,20 @@ public class UserBL {
 
     }
     
+    public boolean unbookDriver(int did) {
+        try {
+            String query = "UPDATE Driver SET is_available = true WHERE did = ?";
+            PreparedStatement statement = dbConnection.prepareStatement(query);
+            statement.setInt(1, did);
+
+            int rowsUpdated = statement.executeUpdate();
+            return rowsUpdated > 0; // Return true if at least one row is updated
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
     public int searchDriverProfile(int driverId) {
         String query = "SELECT * FROM Driver WHERE id = ?;";
         try (PreparedStatement statement = dbConnection.prepareStatement(query)) {
@@ -285,6 +305,26 @@ public class UserBL {
             return null;
         }
 
+    }
+    
+    
+    public Driver returnDriverProfile(int driverId) {
+        String query = "SELECT * FROM Driver WHERE id = ?;";
+        try (PreparedStatement statement = dbConnection.prepareStatement(query)) {
+            statement.setInt(1, driverId);
+            ResultSet result = statement.executeQuery();
+           if(result.next()){
+               Driver driver = new Driver();
+               driver.setId(result.getInt("id"));
+               driver.setName(result.getString("name"));
+               driver.setIs_available(result.getBoolean("is_available"));             
+               return driver;
+           }
+           
+        } catch (SQLException e) {
+           return null;
+        }
+        return null;
     }
 
 }

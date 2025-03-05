@@ -19,6 +19,7 @@ public class User {
     private String email;
     private String telephone;
     private String address;
+    private boolean booked;//only for send the booked state if user is a driver 2
     
     public int getUid() {
         return uid;
@@ -92,6 +93,14 @@ public class User {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public boolean isBooked() {
+        return booked;
+    }
+
+    public void setBooked(boolean booked) {
+        this.booked = booked;
     }
     
     

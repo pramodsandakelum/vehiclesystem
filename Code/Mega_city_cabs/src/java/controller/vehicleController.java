@@ -39,6 +39,21 @@ public class vehicleController {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     }
+    
+    @Path("/getVehicleByType/{type}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @GET
+    public Response getVehicleByType(@PathParam("type") String type) {
+        try {
+            List<Vehicle> vehicleList = vehiclebl.getVehiclesbyType(type);
+            return Response.status(Response.Status.OK).entity(vehicleList).build();
+        } catch (Exception e) {
+            JSONObject jsonresult = new JSONObject();
+            return Response.status(Response.Status.OK).entity(jsonresult.put("message", "System Exception").toString()).build();
+        }
+    }
+
 
     @Path("/addVehicle")
     @Produces(MediaType.APPLICATION_JSON)

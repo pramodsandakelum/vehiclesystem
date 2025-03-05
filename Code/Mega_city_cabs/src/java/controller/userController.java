@@ -146,13 +146,13 @@ public class userController {
         try {
             System.out.println("update call");
             String Result = userbl.updateUser(user);
-            
+
             JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("message", Result);
-            
+
             return Response.status(Response.Status.OK).entity(jsonResponse.toString()).build();
         } catch (Exception e) {
-            
+
             JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("message", "Server Error");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse.toString()).build();
@@ -165,19 +165,19 @@ public class userController {
     public Response deleteAccount(@PathParam("id") int id) {
         try {
             String Result = userbl.deleteUser(id);
-            
+
             JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("message", Result);
-            
+
             return Response.status(Response.Status.OK).entity(jsonResponse.toString()).build();
         } catch (Exception e) {
-            
+
             JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("message", "Server Error");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse.toString()).build();
         }
     }
-    
+
     @Path("/getAllDrivers")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -187,6 +187,26 @@ public class userController {
             return Response.status(Response.Status.OK).entity(driverlist).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+
+    @Path("driverProfile/{id}")
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response driverProfile(@PathParam("id") int id) {
+        try {
+            Driver driver = userbl.returnDriverProfile(id);
+            if (driver == null) {
+                JSONObject jsonResponse = new JSONObject();
+                jsonResponse.put("message", "No Profile Found");
+                return Response.status(Response.Status.OK).entity(jsonResponse.toString()).build();
+            }
+            return Response.status(Response.Status.OK).entity(driver).build();
+        } catch (Exception e) {
+
+            JSONObject jsonResponse = new JSONObject();
+            jsonResponse.put("message", "Server Error");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse.toString()).build();
         }
     }
 

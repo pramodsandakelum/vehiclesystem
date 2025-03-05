@@ -5,18 +5,17 @@
 package service;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import model.Booking;
-import model.Destination;
 import model.Driver;
+import model.User;
+import model.Vehicle;
 import model.billCalculateDTO;
 import model.bookingDetailDTO;
 
@@ -30,6 +29,7 @@ public class BookingBL {
     public Connection dbConnection = dbManager.getConnection();
     
     private final UserBL userbl = new UserBL();
+    private final VehicleBL vehiclebl = new VehicleBL();
 
     public billCalculateDTO calculateBooking(int pickup, int drop) {
         final double earthRadius = 6378;
@@ -129,6 +129,84 @@ public class BookingBL {
         }
 
     }
+    
+    public List<bookingDetailDTO> getAllBookingsByDID(int id) {
+        try {
+            List<bookingDetailDTO> bookingList = new ArrayList<>();
+
+            String Query = "SELECT * FROM Booking WHERE did=?";
+            PreparedStatement statement = dbConnection.prepareStatement(Query);
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery(Query);
+            while (result.next()) {
+                bookingDetailDTO booking = new bookingDetailDTO();
+                UserBL user = new UserBL();
+                VehicleBL vehicle = new VehicleBL();
+                DestinationBL destination = new DestinationBL();
+
+                booking.setBid(result.getInt("bid"));
+                booking.setBcode(result.getString("bcode"));
+                booking.setCustomerName(user.returnUserName(result.getInt("cid")));
+                booking.setDriverName(user.returnUserName(result.getInt("did")));
+                booking.setVehicleNumber(vehicle.returnVehicleNo(result.getInt("vid")));
+                booking.setVehicleType(vehicle.returnVehicleType(result.getInt("vid")));
+                booking.setPickupLocation(destination.returnPickup(result.getInt("pickupid")));
+                booking.setDropLocation(destination.returnDrop(result.getInt("dropid")));
+                booking.setDistance(result.getDouble("distance"));
+                booking.setFare(result.getDouble("fare"));
+                booking.setServiceCharge(result.getDouble("serviceCharge"));
+                booking.setFixedCharge(result.getDouble("fixedCharge"));
+                booking.setChargePerKM(result.getDouble("chargePerKM"));
+                booking.setApproved(result.getBoolean("Approved"));
+                bookingList.add(booking);
+            }
+
+            return bookingList;
+
+        } catch (SQLException e) {
+            return null;
+        }
+
+    }
+    
+    public List<bookingDetailDTO> getAllBookingsByCID(int id) {
+        try {
+            List<bookingDetailDTO> bookingList = new ArrayList<>();
+
+            String Query = "SELECT * FROM Booking WHERE cid=?";
+            PreparedStatement statement = dbConnection.prepareStatement(Query);
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery(Query);
+            while (result.next()) {
+                bookingDetailDTO booking = new bookingDetailDTO();
+                UserBL user = new UserBL();
+                VehicleBL vehicle = new VehicleBL();
+                DestinationBL destination = new DestinationBL();
+
+                booking.setBid(result.getInt("bid"));
+                booking.setBcode(result.getString("bcode"));
+                booking.setCustomerName(user.returnUserName(result.getInt("cid")));
+                booking.setDriverName(user.returnUserName(result.getInt("did")));
+                booking.setVehicleNumber(vehicle.returnVehicleNo(result.getInt("vid")));
+                booking.setVehicleType(vehicle.returnVehicleType(result.getInt("vid")));
+                booking.setPickupLocation(destination.returnPickup(result.getInt("pickupid")));
+                booking.setDropLocation(destination.returnDrop(result.getInt("dropid")));
+                booking.setDistance(result.getDouble("distance"));
+                booking.setFare(result.getDouble("fare"));
+                booking.setServiceCharge(result.getDouble("serviceCharge"));
+                booking.setFixedCharge(result.getDouble("fixedCharge"));
+                booking.setChargePerKM(result.getDouble("chargePerKM"));
+                booking.setApproved(result.getBoolean("Approved"));
+                bookingList.add(booking);
+            }
+
+            return bookingList;
+
+        } catch (SQLException e) {
+            return null;
+        }
+
+    }
 
     public String addBooking(Booking booking) {
         String message = "Error Adding Booking";
@@ -165,6 +243,14 @@ public class BookingBL {
                 driver.setName(userbl.returnUserName(booking.getDid()));
                 driver.setIs_available(false);
                 userbl.updateDriverProfile(driver);
+                
+                Vehicle vehicle = new Vehicle();
+                vehicle.setVid(booking.getVid());
+                vehicle.setNumber(vehiclebl.returnVehicleNo(booking.getVid()));
+                vehicle.setType(vehiclebl.returnVehicleType(booking.getVid()));
+                vehicle.setBooked(true);
+                vehiclebl.updateVehicle(vehicle);
+                
                 message = "Booking Created Successfully";
             }
             return message;
@@ -173,11 +259,33 @@ public class BookingBL {
         }
     }
     
-    
     public String generateBookingCode() {
     long timestamp = System.currentTimeMillis(); // Current time in milliseconds
     String uniqueID = UUID.randomUUID().toString().substring(0, 4).toUpperCase(); // Short random string
     return "MCB-" + timestamp + "-" + uniqueID;
 }
+    
+    public List<bookingDetailDTO> tripDetail(int id){
+        
+        User user = userbl.getUserbyID(id);
+        
+        switch (user.getRole()) {
+            case 1:
+            {//if user is admin 1
+                List<bookingDetailDTO> bookingdetail = getAllBookings();
+                return bookingdetail;
+            }
+            case 2:
+            {//if user is driver 2
+                List<bookingDetailDTO> bookingdetail = getAllBookingsByDID(id);
+                return bookingdetail;
+            }
+            default:
+            {//if user is customer 3
+                List<bookingDetailDTO> bookingdetail = getAllBookingsByCID(id);
+                return bookingdetail;
+            }
+        }
+    }
 
 }

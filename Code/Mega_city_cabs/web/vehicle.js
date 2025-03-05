@@ -1,21 +1,30 @@
-// 🌟 Fetch and display all vehicles
+
 async function loadVehicles() {
     let response = await fetch("http://localhost:8080/Mega_city_cabs/api/vehicle/getAllVehicle");
     let vehicles = await response.json();
 
     let tableBody = document.getElementById("vehicleTableBody");
     tableBody.innerHTML = ""; // Clear previous rows
-
+    
     vehicles.forEach(v => {
-        let row = `<tr>
+        let rowClass = v.booked ? "table-danger" : "";
+        let row = `<tr class="${rowClass}">
             <td>${v.vid}</td>
             <td>${v.type}</td>
             <td>${v.number}</td>
             <td>${v.booked ? "Yes" : "No"}</td>
             <td>
-                <button class="btn btn-warning btn-sm" onclick="openEditModal(${v.vid}, '${v.type}', '${v.number}')">Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteVehicle(${v.vid})">Delete</button>
-            </td>
+            <button class="btn btn-warning btn-sm" 
+                onclick="openEditModal(${v.vid}, '${v.type}', '${v.number}')"
+                ${v.booked ? "disabled" : ""}>
+                Edit
+            </button>
+            <button class="btn btn-danger btn-sm" 
+                onclick="deleteVehicle(${v.vid})"
+                ${v.booked ? "disabled" : ""}>
+                Delete
+            </button>
+        </td>
         </tr>`;
         tableBody.innerHTML += row;
     });
@@ -53,8 +62,9 @@ async function updateVehicle(){
     let vid = document.getElementById("editVid").value;
     let type = document.getElementById("editType").value;
     let number = document.getElementById("editNumber").value;
+    let booked = false;
 
-    let vehicleData = { vid, type, number};
+    let vehicleData = { vid, type, number,booked};
 
     let response = await fetch(`http://localhost:8080/Mega_city_cabs/api/vehicle/updateVehicle`, {
         method: "POST",
@@ -73,7 +83,6 @@ async function updateVehicle(){
     loadVehicles();
 }
 
-// ❌ Delete Vehicle
 async function deleteVehicle(id) {
     if (confirm("Are you sure you want to delete this vehicle?")) {
         let response = await fetch(`http://localhost:8080/Mega_city_cabs/api/vehicle/deleteVehicle/${id}`);
@@ -83,5 +92,4 @@ async function deleteVehicle(id) {
     }
 }
 
-// 🚀 Load Vehicles on Page Load
 document.addEventListener("DOMContentLoaded", loadVehicles);

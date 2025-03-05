@@ -17,6 +17,7 @@ import model.Booking;
 import model.Destination;
 import model.billCalculateDTO;
 import model.bookingDetailDTO;
+import org.json.JSONObject;
 import service.BookingBL;
 import service.DestinationBL;
 
@@ -68,15 +69,42 @@ public class bookingController {
         }
     }
     
+    @Path("/getallBookingByDID/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllBookingByDID(@PathParam("id")int id){
+        try {           
+            List<bookingDetailDTO> bookingList = bookingbl.getAllBookingsByDID(id);
+            return Response.status(Response.Status.OK).entity(bookingList).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+    
+    @Path("/getallBookingByCID/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllBookingByCID(@PathParam("id")int id){
+        try {           
+            List<bookingDetailDTO> bookingList = bookingbl.getAllBookingsByCID(id);
+            return Response.status(Response.Status.OK).entity(bookingList).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+    
     @Path("/addBooking")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Response addBooking(Booking booking){
         try {
+            JSONObject jsonresult = new JSONObject();
             String result = bookingbl.addBooking(booking);
-            return Response.status(Response.Status.OK).entity(result).build();
+            jsonresult.put("message", result);
+            return Response.status(Response.Status.OK).entity(jsonresult.toString()).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+            JSONObject jsonresult = new JSONObject();
+            return Response.status(Response.Status.OK).entity(jsonresult.put("message", "System Exception").toString()).build();
         }
     }
     

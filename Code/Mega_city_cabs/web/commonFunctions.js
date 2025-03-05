@@ -127,38 +127,47 @@ function loadUsers() {
                 console.log(data);
                 let rows = "";
                 data.forEach(user => {
-                    rows += `
-                            <tr>
-                                <td>${user.uid}</td>
-                                <td>${user.username}</td>
-                                <td style='display:none;'>${user.password}</td>
-                                <td>${user.fname}</td>
-                                <td>${user.lname}</td>
-                                <td>${user.email}</td>
-                                <td>${user.telephone}</td>
-                                <td style='display:none;'>${user.address}</td>
-                                <td>${getRoleText(user.role)}</td>
-                                <td>
-                                <button class="btn btn-primary btn-sm" onclick='openUserModal({
-                                                uid: ${user.uid},
-                                                username: "${user.username}",
-                                                password: "${user.password}",
-                                                fname: "${user.fname}",
-                                                lname: "${user.lname}",
-                                                email: "${user.email}",
-                                                telephone: "${user.telephone}",
-                                                address: "${user.address}",
-                                                role: ${user.role}
-                                            })'>
-                                <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.uid})">
-                                <i class="fas fa-trash"></i> Delete
-                                </button>
-                                </td>
-                            </tr>
-                        `;
-                });
+    let isDisabled = user.role === 2 && user.booked === true; // Check role and booking status
+    let rowClass = user.booked ? "table-danger" : ""; // Apply red background if booked
+
+    rows += `
+        <tr class="${rowClass}">
+            <td>${user.uid}</td>
+            <td>${user.username}</td>
+            <td style='display:none;'>${user.password}</td>
+            <td>${user.fname}</td>
+            <td>${user.lname}</td>
+            <td>${user.email}</td>
+            <td>${user.telephone}</td>
+            <td style='display:none;'>${user.address}</td>
+            <td>${getRoleText(user.role)}</td>
+            <td>
+                <button class="btn btn-primary btn-sm" 
+                        onclick='openUserModal({
+                            uid: ${user.uid},
+                            username: "${user.username}",
+                            password: "${user.password}",
+                            fname: "${user.fname}",
+                            lname: "${user.lname}",
+                            email: "${user.email}",
+                            telephone: "${user.telephone}",
+                            address: "${user.address}",
+                            role: ${user.role}
+                        })'
+                        ${isDisabled ? "disabled" : ""}>
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="btn btn-danger btn-sm" 
+                        onclick="deleteUser(${user.uid})"
+                        ${isDisabled ? "disabled" : ""}>
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </td>
+        </tr>
+    `;
+});
+
+
                 document.getElementById("userTableBody").innerHTML = rows;
             })
             .catch(error => {
