@@ -84,22 +84,20 @@
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
 
-                // Perform fetch POST request
+                
                 fetch('http://localhost:8080/Mega_city_cabs/api/user/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     credentials: 'include',
-                    body: JSON.stringify({username, password}) // Send JSON data in request body
+                    body: JSON.stringify({username, password}) 
                 })
                         .then(response => response.json())
                         .then(data => {
-                            if (data.success) {
-                                // Redirect to dashboard or home page
-                                window.location.href = 'dashboard.jsp';  // Adjust URL as necessary
-                            } else {
-                                // Display error message
+                            if (data.success) {   
+                                window.location.href = 'dashboard.jsp';  
+                            } else {                               
                                 document.getElementById('errorMessage').style.display = 'block';
                             }
                         })

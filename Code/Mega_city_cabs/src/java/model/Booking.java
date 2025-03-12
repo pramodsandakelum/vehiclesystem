@@ -26,6 +26,8 @@ public class Booking {
     private Double fixedCharge;
     private Double chargePerKM;
     private boolean Approved;
+    private boolean paid;
+    private String Action;
 
     public boolean isApproved() {
         return Approved;
@@ -138,6 +140,22 @@ public class Booking {
 
     public void setChargePerKM(Double chargePerKM) {
         this.chargePerKM = chargePerKM;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
+    }
+
+    public String getAction() {
+        return Action;
+    }
+
+    public void setAction(String Action) {
+        this.Action = Action;
     }
     
     

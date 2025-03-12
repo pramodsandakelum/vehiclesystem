@@ -8,6 +8,7 @@ package controller;
  *
  * @author pramo
  */
+import java.util.Enumeration;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,31 +59,34 @@ public class userController {
         }
     }
 
-    @Path("/sessionCheck")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response checkSession(@Context HttpServletRequest request, @Context HttpServletResponse response) {
-        // Prevent caching
-        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 0);
+ @Path("/sessionCheck")
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+public Response checkSession(@Context HttpServletRequest request) {
+    HttpSession session = request.getSession(false);
+    
+    if (session != null) {
+        System.out.println("Session ID: " + session.getId());
+        System.out.println("All session attributes:");
 
-        HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("uid") != null) {
-            return Response.ok("{\"authenticated\": true}")
-                    .header(HttpHeaders.CACHE_CONTROL, "no-store, no-cache, must-revalidate, private")
-                    .header("Pragma", "no-cache")
-                    .header("Expires", "0")
-                    .build();
-        } else {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("{\"authenticated\": false}")
-                    .header(HttpHeaders.CACHE_CONTROL, "no-store, no-cache, must-revalidate, private")
-                    .header("Pragma", "no-cache")
-                    .header("Expires", "0")
-                    .build();
+        Enumeration<String> attributes = session.getAttributeNames();
+        while (attributes.hasMoreElements()) {
+            String attr = attributes.nextElement();
+            System.out.println(attr + ": " + session.getAttribute(attr));
+        }
+
+        Object uid = session.getAttribute("uid");
+        if (uid != null) {
+            return Response.ok("{\"authenticated\": true}").build();
         }
     }
+
+    return Response.status(Response.Status.UNAUTHORIZED)
+            .entity("{\"authenticated\": false}")
+            .build();
+}
+
+
 
     @POST
     @Path("/logout")
@@ -143,12 +147,13 @@ public class userController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateAccount(User user) {
+       
         try {
             System.out.println("update call");
-            String Result = userbl.updateUser(user);
+           String Result = userbl.updateUser(user);
 
             JSONObject jsonResponse = new JSONObject();
-            jsonResponse.put("message", Result);
+           jsonResponse.put("message", Result);
 
             return Response.status(Response.Status.OK).entity(jsonResponse.toString()).build();
         } catch (Exception e) {

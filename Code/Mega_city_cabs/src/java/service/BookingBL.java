@@ -107,6 +107,7 @@ public class BookingBL {
 
                 booking.setBid(result.getInt("bid"));
                 booking.setBcode(result.getString("bcode"));
+                booking.setBdate(result.getDate("bdate"));
                 booking.setCustomerName(user.returnUserName(result.getInt("cid")));
                 booking.setDriverName(user.returnUserName(result.getInt("did")));
                 booking.setVehicleNumber(vehicle.returnVehicleNo(result.getInt("vid")));

@@ -109,4 +109,20 @@ public class bookingController {
     }
     
     
+    @Path("/updateTripStatus")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateBooking(Booking booking){
+        System.out.println("update trip");
+        try {
+            JSONObject jsonresult = new JSONObject();
+            int id = booking.getBid();
+            System.out.println(id);
+            jsonresult.put("message", id);
+            return Response.status(Response.Status.OK).entity(jsonresult.toString()).build();
+        } catch (Exception e) {
+            JSONObject jsonresult = new JSONObject();
+            return Response.status(Response.Status.OK).entity(jsonresult.put("message", "System Exception").toString()).build();
+        }
+    }
 }
