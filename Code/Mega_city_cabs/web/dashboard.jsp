@@ -81,10 +81,10 @@
 
     <body>
 
-        <!-- Sidebar -->
+        
         <div class="sidebar">
             <div class="profile">
-                <img src="user-avatar.png" alt="User Avatar"> <!-- Replace with dynamic avatar -->
+                <img src="user-avatar.png" alt="User Avatar">
                 <h5 id="username">Loading...</h5>
                 <p id="role-text">Loading...</p>
             </div>
@@ -116,12 +116,12 @@
             </div>
         </div>
 
-        <!-- Main Content Area -->
+        
         <div class="content">
             <iframe id="contentFrame" src=""></iframe>
         </div>
 
-        <!-- Bootstrap JS -->
+        
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script>
                     var username = '<%= session.getAttribute("username") != null ? session.getAttribute("username") : ""%>';

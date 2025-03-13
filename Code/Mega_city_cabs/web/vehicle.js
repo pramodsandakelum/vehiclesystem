@@ -4,7 +4,7 @@ async function loadVehicles() {
     let vehicles = await response.json();
 
     let tableBody = document.getElementById("vehicleTableBody");
-    tableBody.innerHTML = ""; // Clear previous rows
+    tableBody.innerHTML = ""; 
     
     vehicles.forEach(v => {
         let rowClass = v.booked ? "table-danger" : "";

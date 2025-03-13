@@ -18,7 +18,7 @@
                 color: white;
             }
             .login-container {
-                background-color: rgba(0, 0, 0, 0.6); /* Transparent black background */
+                background-color: rgba(0, 0, 0, 0.6); 
                 padding: 40px;
                 border-radius: 10px;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);

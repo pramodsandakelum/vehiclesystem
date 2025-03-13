@@ -33,7 +33,7 @@
     <h2>Manage Vehicles</h2>
     
     <form id="vehicleForm">
-        <input type="hidden" id="vid"> <!-- Hidden for Update -->
+        <input type="hidden" id="vid">
         
         <label class="form-label">Vehicle Type:</label>
         <select id="type" class="form-control">

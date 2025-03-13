@@ -5,8 +5,7 @@ async function loadDestination() {
     let destination = await response.json();
 
     let tableBody = document.getElementById("destinationTableBody");
-    tableBody.innerHTML = ""; // Clear previous rows
-    
+    tableBody.innerHTML = ""; 
     destination.forEach(d => {
         let row = `<tr>
             <td>${d.cid}</td>

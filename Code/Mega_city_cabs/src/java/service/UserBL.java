@@ -266,7 +266,7 @@ public class UserBL {
             statement.setInt(1, did);
 
             int rowsUpdated = statement.executeUpdate();
-            return rowsUpdated > 0; // Return true if at least one row is updated
+            return rowsUpdated > 0; 
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

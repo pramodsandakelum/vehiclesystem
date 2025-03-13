@@ -5,6 +5,7 @@
 package service;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,6 +31,7 @@ public class BookingBL {
 
     private final UserBL userbl = new UserBL();
     private final VehicleBL vehiclebl = new VehicleBL();
+    private final DestinationBL destinationbl = new DestinationBL();
 
     public billCalculateDTO calculateBooking(int pickup, int drop) {
         final double earthRadius = 6378;
@@ -265,7 +267,7 @@ public class BookingBL {
 
     public String generateBookingCode() {
         long timestamp = System.currentTimeMillis(); // Current time in milliseconds
-        String uniqueID = UUID.randomUUID().toString().substring(0, 4).toUpperCase(); // Short random string
+        String uniqueID = UUID.randomUUID().toString().substring(0, 4).toUpperCase();
         return "MCB-" + timestamp + "-" + uniqueID;
     }
 
@@ -309,26 +311,59 @@ public class BookingBL {
 
                 String driverQuery = "UPDATE Driver SET is_available=? WHERE id=?";
                 String vehicleQuery = "UPDATE Vehicle SET booked=? WHERE vid=?";
-                String bookingQuery = "SELECT did,vid FROM Booking WHERE bid=?";
+
+                String bookingQuery = "SELECT * FROM Booking WHERE bid=?";
                 PreparedStatement book = dbConnection.prepareStatement(bookingQuery);
                 book.setInt(1, booking.getBid());
                 ResultSet rst = book.executeQuery();
                 int did = 0;
                 int vid = 0;
+                int pickupid = 0;
+                int dropid = 0;
+                double distance = 0.0;
+                double fare = 0.0;
+                Date bdate = null;
                 if (rst.next()) {
                     did = rst.getInt("did");
                     vid = rst.getInt("vid");
+                    pickupid = rst.getInt("pickupid");
+                    dropid = rst.getInt("dropid");
+                    distance = rst.getInt("distance");
+                    fare = rst.getInt("fare");
+                    bdate = rst.getDate("bdate");
                 }
+
                 PreparedStatement driver = dbConnection.prepareStatement(driverQuery);
                 driver.setBoolean(1, true);
                 driver.setInt(2, did);
                 driver.executeUpdate();
-                
-                
+
                 PreparedStatement vehicle = dbConnection.prepareStatement(vehicleQuery);
                 vehicle.setBoolean(1, false);
                 vehicle.setInt(2, vid);
                 vehicle.executeUpdate();
+
+                if (booking.getAction().equals("End")) {
+
+                    try {
+                        String createBill = "INSERT INTO Bill (bdate, driver, vehicle, pickupl, dropl, distance, fare, paid) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+
+                    PreparedStatement statement = dbConnection.prepareStatement(createBill);
+
+                    statement.setDate(1, bdate);
+                    statement.setString(2, userbl.returnUserName(did));
+                    statement.setString(3, vehiclebl.returnVehicleNo(vid));
+                    statement.setString(4, destinationbl.returnPickup(pickupid));
+                    statement.setString(5, destinationbl.returnDrop(dropid));
+                    statement.setDouble(6, distance);
+                    statement.setDouble(7, fare);
+                    statement.setBoolean(8, false);
+
+                    statement.executeUpdate();
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
 
                 return message = "Trip " + booking.getAction() + " Successful?";
             }

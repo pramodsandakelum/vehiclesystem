@@ -16,10 +16,11 @@ public class Bill {
     private Date bdate;
     private String driver;
     private String vehicle;
-    private String pickup;
-    private String drop;
+    private String pickupl;
+    private String dropl;
     private Double distance;
     private Double fare;
+    private Boolean paid;
 
     public int getBid() {
         return bid;
@@ -53,21 +54,6 @@ public class Bill {
         this.vehicle = vehicle;
     }
 
-    public String getPickup() {
-        return pickup;
-    }
-
-    public void setPickup(String pickup) {
-        this.pickup = pickup;
-    }
-
-    public String getDrop() {
-        return drop;
-    }
-
-    public void setDrop(String drop) {
-        this.drop = drop;
-    }
 
     public Double getDistance() {
         return distance;
@@ -83,6 +69,30 @@ public class Bill {
 
     public void setFare(Double fare) {
         this.fare = fare;
+    }
+
+    public String getPickupl() {
+        return pickupl;
+    }
+
+    public void setPickupl(String pickupl) {
+        this.pickupl = pickupl;
+    }
+
+    public String getDropl() {
+        return dropl;
+    }
+
+    public void setDropl(String dropl) {
+        this.dropl = dropl;
+    }
+
+    public Boolean getPaid() {
+        return paid;
+    }
+
+    public void setPaid(Boolean paid) {
+        this.paid = paid;
     }
     
             

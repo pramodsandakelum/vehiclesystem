@@ -82,7 +82,7 @@ function createAccount() {
     // Prepare user data
     let User = {
         username: username,
-        password: password, // Ensure the backend hashes this!
+        password: password, 
         email: email,
         role: parseInt(role),
         fname: fname,
@@ -116,7 +116,7 @@ function createAccount() {
 
 function loadUsers() {
     
-    fetch("http://localhost:8080/Mega_city_cabs/api/user/getAllUsers") // Update with your actual API endpoint
+    fetch("http://localhost:8080/Mega_city_cabs/api/user/getAllUsers")
             .then(response => {
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
@@ -185,7 +185,7 @@ function getRoleText(role) {
         case 3:
             return "Customer";
         default:
-            return "Unknown Role"; // Handle unexpected values
+            return "Unknown Role";
     }
 }
 
@@ -250,7 +250,7 @@ function saveUser() {
                     loadUsers();
                     let modal = new bootstrap.Modal(document.getElementById("userModal"));
                     
-            //window.location.href = "index.jsp"; // Uncomment if redirect is needed
+            //window.location.href = "index.jsp";
         } else if(data.message === "Account Updated Successfully") {
             alert("✅ Account updated successfully!");
                     loadUsers();
