@@ -100,13 +100,19 @@ function createBooking() {
     let vid = document.getElementById("vid").value;
     let bdate = document.getElementById("bdate").value;
 
+    if (!pickupid || !dropid || !cid || !did || !vid || !bdate) {
+        document.getElementById("message").innerHTML =
+                `<div class="alert alert-danger">All fields are required!</div>`;
+        return;
+    }
+
     let booking = {
-        cid:cid,
-        did:did,
-        vid:vid,
-        pickupid:pickupid,
-        dropid:dropid,
-        bdate:bdate
+        cid: parseInt(cid, 10),
+        did: parseInt(did, 10),
+        vid: parseInt(vid, 10),
+        pickupid: parseInt(pickupid, 10),
+        dropid: parseInt(dropid, 10),
+        bdate: bdate
     };
 
 
@@ -115,12 +121,26 @@ function createBooking() {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(booking)
     })
-            .then(response => response.json())
-            .then(message => {
-                document.getElementById("message").innerHTML = `<div class="alert alert-success">${message}</div>`;
+            .then(response => {
+                console.log("Response received:", response);
+                return response.text(); // Log raw response before parsing JSON
+            })
+            .then(text => {
+                console.log("Raw response text:", text);
+                return text ? JSON.parse(text) : {}; // Prevent JSON parse errors if empty
+            })
+            .then(data => {
+                console.log("Success book");
+                console.log(data);
+                document.getElementById("message").innerHTML =
+                        `<div class="alert alert-success">${data.message || "Booking Added Successfully"}</div>`;
             })
             .catch(error => {
-                document.getElementById("message").innerHTML = `<div class="alert alert-danger">Error: ${error}</div>`;
+                console.error("Fetch error:", error);
+                document.getElementById("message").innerHTML =
+                        `<div class="alert alert-danger">Error: ${error}</div>`;
             });
+            alert("Booking Successful");
 
 }
+

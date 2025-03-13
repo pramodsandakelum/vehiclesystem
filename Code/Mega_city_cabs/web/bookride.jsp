@@ -10,9 +10,18 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <script src="bookride.js"></script>
         <script src="commonFunctions.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
+            function showBookingSuccessAlert() {
+                Swal.fire({
+                    icon: 'success',
+                    html: '<div class="alert alert-success">Booking Added Successfully</div>',
+                    confirmButtonText: 'OK'
+                });
+            }
+
             let inactivityTimer;
-            function resetInactivityTimer() {        
+            function resetInactivityTimer() {
                 console.log("reset");
                 clearTimeout(inactivityTimer);
                 inactivityTimer = setTimeout(function () {
@@ -54,7 +63,7 @@
                         <label for="cname" class="form-label">Customer Name:</label>
                         <b><label id="name" class="form-label"></label></b><br>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="pickupid" class="form-label">Pickup Location:</label>
@@ -100,7 +109,7 @@
                                 <option value="Van">Van</option>
                             </select>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="vid" class="form-label">Vehicle:</label>
                             <select class="form-control" id="vid" name="vid" required>
@@ -119,13 +128,13 @@
                             <button onclick="createBooking()" class="btn btn-primary w-100">Confirm Booking</button>
                         </div>
 
-                        
+
                     </div>
                 </div>
             </form>
         </div>
 
-        
+
 
     </body>
 </html>

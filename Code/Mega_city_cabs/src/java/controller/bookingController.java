@@ -18,6 +18,7 @@ import model.Booking;
 import model.Destination;
 import model.billCalculateDTO;
 import model.bookingDetailDTO;
+import org.json.JSONException;
 import org.json.JSONObject;
 import service.BookingBL;
 import service.DestinationBL;
@@ -124,13 +125,17 @@ public class bookingController {
     @Path("/addBooking")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response addBooking(Booking booking){
+        System.out.println("booking");
         try {
             JSONObject jsonresult = new JSONObject();
             String result = bookingbl.addBooking(booking);
             jsonresult.put("message", result);
+            System.out.println(jsonresult.toString());
             return Response.status(Response.Status.OK).entity(jsonresult.toString()).build();
-        } catch (Exception e) {
+        } catch (JSONException e) {
+            e.printStackTrace();
             JSONObject jsonresult = new JSONObject();
             return Response.status(Response.Status.OK).entity(jsonresult.put("message", "System Exception").toString()).build();
         }

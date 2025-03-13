@@ -262,7 +262,7 @@ public class BookingBL {
             }
             return message;
         } catch (SQLException e) {
-            return "Internal server Error" + e.getMessage();
+            return "Internal server Error";
         }
     }
 
