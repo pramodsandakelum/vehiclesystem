@@ -154,4 +154,19 @@ public class bookingController {
             return Response.status(Response.Status.OK).entity(jsonresult.put("message", "System Exception").toString()).build();
         }
     }
+    
+    @Path("/payBill")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response payBill(Bill bill){
+        try {
+            JSONObject jsonresult = new JSONObject();
+            String result = bookingbl.PayBill(bill);
+            jsonresult.put("message", result);
+            return Response.status(Response.Status.OK).entity(jsonresult.toString()).build();
+        } catch (Exception e) {
+            JSONObject jsonresult = new JSONObject();
+            return Response.status(Response.Status.OK).entity(jsonresult.put("message", "System Exception").toString()).build();
+        }
+    }
 }

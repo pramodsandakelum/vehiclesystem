@@ -1,6 +1,6 @@
 function fetchBookings(userRole, uid) {
     let url = "";
-    alert("urole "+userRole);
+    
    
     if (userRole === 1) {
         url = "http://localhost:8080/Mega_city_cabs/api/booking/getallBooking";  // Admin

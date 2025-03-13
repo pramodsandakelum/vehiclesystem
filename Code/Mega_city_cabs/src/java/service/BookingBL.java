@@ -436,5 +436,23 @@ public class BookingBL {
 
     }
     
+    public String PayBill(Bill bill){
+        try {
+            String Message = "Bill Payment Failed";
+            String query ="UPDATE Bill SET fare=?, paid=? WHERE bid=?";
+            PreparedStatement pst = dbConnection.prepareStatement(query);
+            pst.setDouble(1, bill.getFare());
+            pst.setBoolean(2, true);
+            pst.setInt(3, bill.getBid());
+            int result = pst.executeUpdate();
+            if(result>0){
+                return Message = "Bill Paid Successfully";
+            }
+            return Message ="Server Error";
+        } catch (Exception e) {
+            
+        }
+        return null;
+    }
     
 }
