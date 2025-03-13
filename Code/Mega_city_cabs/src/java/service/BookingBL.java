@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import model.Bill;
 import model.Booking;
 import model.Driver;
 import model.User;
@@ -372,5 +373,68 @@ public class BookingBL {
             return null;
         }
     }
+    
+    
+    ///////////////bills section //////////////////////////////
+    /// @return /
+    public List<Bill> getAllBills() {
+        try {
+            List<Bill> billList = new ArrayList<>();
 
+            String Query = "SELECT * FROM Bill";
+            Statement statement = dbConnection.createStatement();
+            ResultSet result = statement.executeQuery(Query);
+            while (result.next()) {
+                Bill bill = new Bill();
+                bill.setBid(result.getInt("bid"));
+                bill.setBdate(result.getDate("bdate"));
+                bill.setDriver(result.getString("driver"));
+                bill.setVehicle(result.getString("vehicle"));
+                bill.setPickupl(result.getString("pickupl"));
+                bill.setDropl(result.getString("dropl"));
+                bill.setDistance(result.getDouble("distance"));
+                bill.setFare(result.getDouble("fare"));
+                bill.setPaid(result.getBoolean("paid"));
+                billList.add(bill);
+            }
+
+            return billList;
+
+        } catch (SQLException e) {
+            return null;
+        }
+
+    }
+    
+    public List<Bill> getBillByID(int id) {
+        try {
+            List<Bill> billList = new ArrayList<>();
+
+            String Query = "SELECT * FROM Bill WHERE bid=?";
+            PreparedStatement statement = dbConnection.prepareStatement(Query);
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                Bill bill = new Bill();
+                bill.setBid(result.getInt("bid"));
+                bill.setBdate(result.getDate("bdate"));
+                bill.setDriver(result.getString("driver"));
+                bill.setVehicle(result.getString("vehicle"));
+                bill.setPickupl(result.getString("pickupl"));
+                bill.setDropl(result.getString("dropl"));
+                bill.setDistance(result.getDouble("distance"));
+                bill.setFare(result.getDouble("fare"));
+                bill.setPaid(result.getBoolean("paid"));
+                billList.add(bill);
+            }
+
+            return billList;
+
+        } catch (SQLException e) {
+            return null;
+        }
+
+    }
+    
+    
 }

@@ -13,6 +13,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import model.Bill;
 import model.Booking;
 import model.Destination;
 import model.billCalculateDTO;
@@ -69,6 +70,19 @@ public class bookingController {
         }
     }
     
+    
+    @Path("/getallBills")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllBills(){
+        try {           
+            List<Bill> bookingList = bookingbl.getAllBills();
+            return Response.status(Response.Status.OK).entity(bookingList).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+    
     @Path("/getallBookingByDID/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -76,6 +90,18 @@ public class bookingController {
         try {           
             List<bookingDetailDTO> bookingList = bookingbl.getAllBookingsByDID(id);
             return Response.status(Response.Status.OK).entity(bookingList).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+    
+    @Path("/getBillById/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getBillByID(@PathParam("id")int id){
+        try {           
+            List<Bill> bill = bookingbl.getBillByID(id);
+            return Response.status(Response.Status.OK).entity(bill).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
