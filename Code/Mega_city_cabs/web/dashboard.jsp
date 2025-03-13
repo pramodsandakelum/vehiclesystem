@@ -11,20 +11,10 @@
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="commonFunctions.js"></script>
-        <script>
-            let inactivityTimer;
-            function resetInactivityTimer() {
-                clearTimeout(inactivityTimer);
-                inactivityTimer = setTimeout(autoLogout, 60000); //5 minutes
-            }
-
+        <script>           
             function autoLogout() {
                 logout();
             }
-            window.onload = resetInactivityTimer;
-            document.onmousemove = resetInactivityTimer;
-            document.onkeypress = resetInactivityTimer;
-            document.onclick = resetInactivityTimer;
         </script>
         <style>
             body {
@@ -121,20 +111,7 @@
             <a href="#" onclick="loadPage('bill.jsp')">Bills</a>
             <% }%>
 
-            <div class="logout">             
-                <script>
-                    function checkSession() {
-                        fetch('http://localhost:8080/Mega_city_cabs/api/user/sessionCheck', {method: 'GET', credentials: 'include'})
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (!data.authenticated) {
-                                        logout();
-                                    }
-                                })
-                                .catch(error => console.error('Error checking session:', error));
-                    }
-                    setInterval(checkSession, 300000);
-                </script>             
+            <div class="logout">                     
                 <a href="#" class="text-danger" onclick="logout()">Logout</a>
             </div>
         </div>

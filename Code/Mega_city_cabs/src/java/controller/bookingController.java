@@ -85,8 +85,10 @@ public class bookingController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllBookingByCID(@PathParam("id")int id){
-        try {           
+        try { 
+            System.out.println(id);
             List<bookingDetailDTO> bookingList = bookingbl.getAllBookingsByCID(id);
+            System.out.println(bookingList);
             return Response.status(Response.Status.OK).entity(bookingList).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
@@ -115,10 +117,11 @@ public class bookingController {
     public Response updateBooking(Booking booking){
         System.out.println("update trip");
         try {
+            System.out.println(booking.getBid());
+            System.out.println(booking.getAction());
             JSONObject jsonresult = new JSONObject();
-            int id = booking.getBid();
-            System.out.println(id);
-            jsonresult.put("message", id);
+            String message = bookingbl.updateTripStatus(booking);
+            jsonresult.put("message", message);
             return Response.status(Response.Status.OK).entity(jsonresult.toString()).build();
         } catch (Exception e) {
             JSONObject jsonresult = new JSONObject();

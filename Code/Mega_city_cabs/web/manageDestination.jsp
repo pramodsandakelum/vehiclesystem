@@ -7,6 +7,26 @@
         <title>Manage Destination</title>     
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <script src="destination.js"></script>
+        <script src="commonFunctions.js"></script>
+        <script>
+            let inactivityTimer;
+            function resetInactivityTimer() {        
+                console.log("reset");
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(function () {
+                    if (window.parent && window.parent.autoLogout) {
+                        window.parent.autoLogout();
+                    } else {
+                        console.error("autoLogout function not found in parent window.");
+                    }
+                }, 900000); // 15 mins logout
+            }
+
+            window.onload = resetInactivityTimer;
+            document.onmousemove = resetInactivityTimer;
+            document.onkeypress = resetInactivityTimer;
+            document.onclick = resetInactivityTimer;
+        </script>
         <script>
             window.onload = function () {               
                     loadDestination();         

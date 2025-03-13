@@ -27,7 +27,7 @@ public class BookingBL {
 
     public DBHandler dbManager = DBHandler.getInstance();
     public Connection dbConnection = dbManager.getConnection();
-    
+
     private final UserBL userbl = new UserBL();
     private final VehicleBL vehiclebl = new VehicleBL();
 
@@ -130,7 +130,7 @@ public class BookingBL {
         }
 
     }
-    
+
     public List<bookingDetailDTO> getAllBookingsByDID(int id) {
         try {
             List<bookingDetailDTO> bookingList = new ArrayList<>();
@@ -138,7 +138,7 @@ public class BookingBL {
             String Query = "SELECT * FROM Booking WHERE did=?";
             PreparedStatement statement = dbConnection.prepareStatement(Query);
             statement.setInt(1, id);
-            ResultSet result = statement.executeQuery(Query);
+            ResultSet result = statement.executeQuery();
             while (result.next()) {
                 bookingDetailDTO booking = new bookingDetailDTO();
                 UserBL user = new UserBL();
@@ -147,6 +147,7 @@ public class BookingBL {
 
                 booking.setBid(result.getInt("bid"));
                 booking.setBcode(result.getString("bcode"));
+                booking.setBdate(result.getDate("bdate"));
                 booking.setCustomerName(user.returnUserName(result.getInt("cid")));
                 booking.setDriverName(user.returnUserName(result.getInt("did")));
                 booking.setVehicleNumber(vehicle.returnVehicleNo(result.getInt("vid")));
@@ -169,7 +170,7 @@ public class BookingBL {
         }
 
     }
-    
+
     public List<bookingDetailDTO> getAllBookingsByCID(int id) {
         try {
             List<bookingDetailDTO> bookingList = new ArrayList<>();
@@ -177,7 +178,7 @@ public class BookingBL {
             String Query = "SELECT * FROM Booking WHERE cid=?";
             PreparedStatement statement = dbConnection.prepareStatement(Query);
             statement.setInt(1, id);
-            ResultSet result = statement.executeQuery(Query);
+            ResultSet result = statement.executeQuery();
             while (result.next()) {
                 bookingDetailDTO booking = new bookingDetailDTO();
                 UserBL user = new UserBL();
@@ -186,6 +187,7 @@ public class BookingBL {
 
                 booking.setBid(result.getInt("bid"));
                 booking.setBcode(result.getString("bcode"));
+                booking.setBdate(result.getDate("bdate"));
                 booking.setCustomerName(user.returnUserName(result.getInt("cid")));
                 booking.setDriverName(user.returnUserName(result.getInt("did")));
                 booking.setVehicleNumber(vehicle.returnVehicleNo(result.getInt("vid")));
@@ -204,6 +206,7 @@ public class BookingBL {
             return bookingList;
 
         } catch (SQLException e) {
+            System.out.println(e);
             return null;
         }
 
@@ -235,23 +238,23 @@ public class BookingBL {
             statement.setDouble(11, charges.getFixedCharge());
             statement.setDouble(12, charges.getChargePerKM());
             statement.setBoolean(13, true);
-            
+
             int result = statement.executeUpdate();
-            if(result>0){
+            if (result > 0) {
                 //update driver profile setting driver unavailable
                 Driver driver = new Driver();
                 driver.setId(booking.getDid());
                 driver.setName(userbl.returnUserName(booking.getDid()));
                 driver.setIs_available(false);
                 userbl.updateDriverProfile(driver);
-                
+
                 Vehicle vehicle = new Vehicle();
                 vehicle.setVid(booking.getVid());
                 vehicle.setNumber(vehiclebl.returnVehicleNo(booking.getVid()));
                 vehicle.setType(vehiclebl.returnVehicleType(booking.getVid()));
                 vehicle.setBooked(true);
                 vehiclebl.updateVehicle(vehicle);
-                
+
                 message = "Booking Created Successfully";
             }
             return message;
@@ -259,33 +262,79 @@ public class BookingBL {
             return "Internal server Error" + e.getMessage();
         }
     }
-    
+
     public String generateBookingCode() {
-    long timestamp = System.currentTimeMillis(); // Current time in milliseconds
-    String uniqueID = UUID.randomUUID().toString().substring(0, 4).toUpperCase(); // Short random string
-    return "MCB-" + timestamp + "-" + uniqueID;
-}
-    
-    public List<bookingDetailDTO> tripDetail(int id){
-        
+        long timestamp = System.currentTimeMillis(); // Current time in milliseconds
+        String uniqueID = UUID.randomUUID().toString().substring(0, 4).toUpperCase(); // Short random string
+        return "MCB-" + timestamp + "-" + uniqueID;
+    }
+
+    public List<bookingDetailDTO> tripDetail(int id) {
+
         User user = userbl.getUserbyID(id);
-        
+
         switch (user.getRole()) {
-            case 1:
-            {//if user is admin 1
+            case 1: {//if user is admin 1
                 List<bookingDetailDTO> bookingdetail = getAllBookings();
                 return bookingdetail;
             }
-            case 2:
-            {//if user is driver 2
+            case 2: {//if user is driver 2
                 List<bookingDetailDTO> bookingdetail = getAllBookingsByDID(id);
                 return bookingdetail;
             }
-            default:
-            {//if user is customer 3
+            default: {//if user is customer 3
                 List<bookingDetailDTO> bookingdetail = getAllBookingsByCID(id);
                 return bookingdetail;
             }
+        }
+    }
+
+    public String updateTripStatus(Booking booking) {
+        try {
+            String message = "Trip " + booking.getAction() + " Action Error?";
+            String query = "UPDATE booking SET Approved=?, paid = ?, Action = ? WHERE bid = ?;";
+            PreparedStatement ps = dbConnection.prepareStatement(query);
+            ps.setBoolean(1, false);
+            ps.setBoolean(2, false);
+            if (booking.getAction().equals("End")) {
+                ps.setString(3, "end");
+                System.out.println("end");
+            } else {
+                ps.setString(3, "cancel");
+                System.out.println("cancel");
+            }
+            ps.setInt(4, booking.getBid());
+            int result = ps.executeUpdate();
+            if (result > 0) {
+
+                String driverQuery = "UPDATE Driver SET is_available=? WHERE id=?";
+                String vehicleQuery = "UPDATE Vehicle SET booked=? WHERE vid=?";
+                String bookingQuery = "SELECT did,vid FROM Booking WHERE bid=?";
+                PreparedStatement book = dbConnection.prepareStatement(bookingQuery);
+                book.setInt(1, booking.getBid());
+                ResultSet rst = book.executeQuery();
+                int did = 0;
+                int vid = 0;
+                if (rst.next()) {
+                    did = rst.getInt("did");
+                    vid = rst.getInt("vid");
+                }
+                PreparedStatement driver = dbConnection.prepareStatement(driverQuery);
+                driver.setBoolean(1, true);
+                driver.setInt(2, did);
+                driver.executeUpdate();
+                
+                
+                PreparedStatement vehicle = dbConnection.prepareStatement(vehicleQuery);
+                vehicle.setBoolean(1, false);
+                vehicle.setInt(2, vid);
+                vehicle.executeUpdate();
+
+                return message = "Trip " + booking.getAction() + " Successful?";
+            }
+            return message = "Trip " + booking.getAction() + " Failed?";
+        } catch (SQLException e) {
+            return null;
         }
     }
 
